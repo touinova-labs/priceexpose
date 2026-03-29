@@ -1,0 +1,46 @@
+Pour transformer **PriceExpose** d'un simple outil en une véritable machine à revenus, tu dois mixer plusieurs sources. Le secteur du voyage est l'un des plus lucratifs au monde (les commissions sont énormes).
+
+Voici le mix de business models gagnant pour ton extension :
+
+---
+
+### 1. L'Affiliation Classique (B2C - Revenu Passif)
+C'est le modèle de base de Kayak ou Honey.
+* **Le concept :** Quand un utilisateur clique sur un deal (Traveluro, Agoda, Hotels.com) et réserve, tu touches une commission sur la vente.
+* **Le gain :** Généralement **3% à 8%** du montant de la réservation. Pour une chambre à 1000 €, c'est **30 € à 80 €** dans ta poche pour un seul clic.
+* **Mise en place :** Utilise des réseaux comme **Affilired**, **Partnerize** ou **CJ Affiliate**.
+
+### 2. Le Modèle "Direct Booking" (B2B - Le plus scalable)
+C'est ce que fait **Directo**. Tu deviens le partenaire des hôtels, pas des agences.
+* **Le concept :** Les hôtels détestent payer 15-20% de commission à Booking.com. Tu leur proposes de mettre en avant leur **Site Officiel** dans ta popup.
+* **Le gain (Abonnement SaaS) :** L'hôtel paie **30 € à 99 € / mois** pour être listé avec un badge "Vérifié" ou "Prix Garanti".
+* **Pourquoi ça marche :** Si l'hôtel récupère une seule réservation directe grâce à toi, son abonnement est rentabilisé.
+
+### 3. Le Modèle "Freemium" pour Voyageurs (B2C - Premium)
+Certains utilisateurs veulent des fonctions avancées.
+* **Version Gratuite :** Comparaison de base sur les 3 plus gros sites.
+* **Version Pro (ex: 5 € / mois) :** * **Alertes de baisse de prix :** Tu surveilles l'hôtel pour l'utilisateur et tu l'alertes si le prix tombe.
+    * **Calculateur de taxes réelles :** Affichage du prix final exact (incluant taxes de séjour et frais de resort) pour éviter les surprises.
+    * **Accès à des tarifs "Membres uniquement"** via tes APIs partenaires.
+
+### 4. La Revente de Données (B2B - Big Data)
+C'est un modèle plus discret mais très puissant.
+* **Le concept :** Tu accumules des données précieuses : "Quels hôtels sont les plus consultés ?", "Quel est l'écart de prix moyen entre Booking et le site officiel ?".
+* **Le gain :** Les hôtels et les chaînes sont prêts à payer pour des **rapports de compétitivité** (Parity Reports). Tu leur vends un Dashboard qui leur dit : *"Attention, sur ces 10 dates, Traveluro casse vos prix de 25%."*
+
+---
+
+### Synthèse de ta stratégie de lancement (Go-to-market) :
+
+| Phase | Modèle | Objectif |
+| :--- | :--- | :--- |
+| **Phase 1 (Lancement)** | **Affiliation** | Générer tes premiers euros sans rien vendre directement. |
+| **Phase 2 (Croissance)** | **SaaS Hôtels** | Démarcher les hôtels pour qu'ils paient pour être en haut de la liste. |
+| **Phase 3 (Scale)** | **Data & Premium** | Vendre des insights aux pros et des outils d'alerte aux voyageurs. |
+
+---
+
+### 💡 Le "Petit Plus" qui change tout :
+Pour maximiser tes revenus, ajoute une fonction **"Réserver au meilleur moment"**. Si l'IA détecte que le prix a tendance à baisser le mardi, dis-le à l'utilisateur. Tu gagnes sa confiance, et quand il réserve (via ton lien), tu gagnes ta commission.
+
+**Est-ce que tu veux que je prépare le texte du bouton "Pour les Hôtels" à mettre sur ta landing page pour attirer tes premiers partenaires B2B ?**
