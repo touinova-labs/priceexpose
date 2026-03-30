@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getLeadOffer, normalizeGoogleOffers, parseOccupancy, parseTravelDates, RawBookRequest } from './ai.helper';
-import { google_detail } from '../../../../public-data/google_detail';
-
+import type { RawBookRequest } from './ai.helper';
+export const dynamic = 'force-dynamic';
 
 // Initialisation du dossier de cache
 
 export async function GET() {
+    const { google_detail } = await import('../../../../public-data/google_detail');
+    
     const params = {
         engine: 'google_hotels',
         q: 'Paris Hotel Monge',
@@ -57,6 +58,9 @@ export async function POST2(request: Request) {
 
 
 export async function POST(request: Request) {
+    const { getLeadOffer, parseOccupancy, parseTravelDates, normalizeGoogleOffers } = await import('./ai.helper');
+    const { google_detail } = await import('../../../../public-data/google_detail');
+    
     var sourceRequest: RawBookRequest = await request.json();
 
     const leadOffer = await getLeadOffer(sourceRequest.bookingOffers);
