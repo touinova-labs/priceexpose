@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
 import type { RawBookRequest } from './ai.helper';
-export const dynamic = 'force-dynamic';
+const { google_detail } = await import('../../../../public-data/google_detail');
 
 // Initialisation du dossier de cache
 
 export async function GET() {
-    const { google_detail } = await import('../../../../public-data/google_detail');
     
     const params = {
         engine: 'google_hotels',

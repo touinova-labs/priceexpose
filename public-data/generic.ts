@@ -1,8 +1,7 @@
 import puppeteer from 'puppeteer-extra';
+import chromium from '@sparticuz/chromium-min';
 import * as proxyChain from 'proxy-chain';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-export const dynamic = 'force-dynamic';
-puppeteer.use(StealthPlugin());
 
 /**
  * Interface pour la configuration du scraper
@@ -21,9 +20,13 @@ interface ScrapeConfig {
 export async function scrapeData<T>(config: ScrapeConfig, extractor: (page: any) => Promise<T> | T): Promise<T | null> {
     console.time("RequestDuration"); // Démarre un timer pour mesurer la durée totale
     let anonymizedProxy = await proxyChain.anonymizeProxy(config.proxyUrl);
-    const chromium = require('@sparticuz/chromium-min'); // Sometimes lazy-loading helps
+    if (puppeteer.plugins.length === 0) {
+        puppeteer.use(StealthPlugin());
+    }
+
     const browser = await puppeteer.launch({
         args: [...chromium.args, "--hide-scrollbars", "--disable-web-security", `--proxy-server=${anonymizedProxy}`],
+        // executablePath: await chromium.executablePath('https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.arm64.tar'),
         executablePath: await chromium.executablePath('https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.x64.tar'),
         headless: true,
     });
