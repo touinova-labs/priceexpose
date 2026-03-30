@@ -1,6 +1,6 @@
 import { proxyConfig, proxyUrl } from "./config"
 import { scrapeData } from "./generic"
-import { ElementHandle, Page } from 'puppeteer';
+import { ElementHandle, Page } from 'puppeteer-core';
 
 export interface BookingOffer {
     "provider": string;
