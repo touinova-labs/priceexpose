@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer-extra';
+import chromium from '@sparticuz/chromium';
 import * as proxyChain from 'proxy-chain';
 
 /**
@@ -18,17 +19,13 @@ interface ScrapeConfig {
 export async function scrapeData<T>(config: ScrapeConfig, extractor: (page: any) => Promise<T> | T): Promise<T | null> {
     console.time("RequestDuration"); // Démarre un timer pour mesurer la durée totale
     let anonymizedProxy = await proxyChain.anonymizeProxy(config.proxyUrl);
+    
     const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            `--proxy-server=${anonymizedProxy}`,
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--disable-gpu',
-            '--disable-extensions'
-        ]
+        args: [...chromium.args, `--proxy-server=${anonymizedProxy}`],
+        // This is the critical line for Vercel
+        executablePath: await chromium.executablePath(),
+        // @ts-ignore - Handle the typing mismatch between puppeteer versions
+        headless: chromium.headless,
     });
 
     try {
