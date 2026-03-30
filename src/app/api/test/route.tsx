@@ -1,25 +1,27 @@
 import { NextResponse } from 'next/server'
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import crypto from 'node:crypto';
 import { getLeadOffer, normalizeGoogleOffers, parseOccupancy, parseTravelDates, RawBookRequest } from './ai.helper';
 import { google_detail } from '../../../../public-data/google_detail';
 
-const CACHE_DIR = path.join(process.cwd(), 'cache_hotels');
-const CACHE_EXPIRATION_MS = 12 * 60 * 60 * 1000; // 12h
 
 // Initialisation du dossier de cache
-async function initCache() {
-    try {
-        await fs.access(CACHE_DIR);
-    } catch {
-        await fs.mkdir(CACHE_DIR, { recursive: true });
-    }
-}
 
-export async function GET(request: Request) {
-    const checkin = "2026-04-14", checkout = "2026-04-16"
-    var results = await google_detail("ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ", checkin, checkout, "EUR", 2, 0);
+export async function GET() {
+    const params = {
+        engine: 'google_hotels',
+        q: 'Paris Hotel Monge',
+        check_in_date: '2026-04-13',
+        check_out_date: '2026-04-16',
+        adults: 2,
+        children: 0,
+        currency: 'EUR',
+        gl: 'fr',
+        hl: 'fr'
+    }
+    // monge
+    var results = await google_detail("ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ", params.check_in_date, params.check_out_date, params.currency, params.adults, params.children);
+    if (!results) {
+        return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
+    }
     if (!results) {
         return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
     }
@@ -28,53 +30,34 @@ export async function GET(request: Request) {
     return NextResponse.json(results);
 }
 
+export async function POST2(request: Request) {
+    const data = await request.json();
+    return NextResponse.json({
+        name: data.hotelName,
+        hasDeal: true,
+        currency: "EUR",
+        totalBooking: 50,
+        type: "BACKEND_RESPONSE",
+        deals: [
+            {
+                source: "SITE 1",
+                totalPrice: 12,
+                url: "https://opdp.com",
+                isOfficial: false,
+            },
+            {
+                source: "SITE 2",
+                totalPrice: 34,
+                url: "https://opdp.com",
+                isOfficial: false,
+            },
+        ]
+    });
+}
+
+
 export async function POST(request: Request) {
-    var sourceRequest: RawBookRequest =
-        // {
-        //     "hotelName": "Hotel Monceau Wagram",
-        //     "address": "7, Rue Rennequin, 17th arr., 75017 Paris, France",
-        //     "checkIn": "Wed, Apr 15",
-        //     "checkOut": "Sat, Apr 18",
-        //     "destination": "Paris",
-        //     "travelers": "Number of travelers and rooms. Currently selected: 2 adults · 0 children · 1 room",
-        //     "bookingOffers": [
-        //         {
-        //             "provider": "Booking.com",
-        //             "room": "Standard Double Room | 1 full bed | 15 m²",
-        //             "options": "Good   breakfast US$21 | Free cancellation before April 13, 2026 | No prepayment needed – pay at the property | •\n\n\n\nWe have 4 left",
-        //             "price_per_night": "$ 696",
-        //             "total_stay": "$ 696",
-        //             "link": "https://www.booking.com/hotel/fr/monceauwagram.html?aid=304142&label=gen173nr-10CAEoggI46AdIM1gEaE2IAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4ApWgls4GwAIB0gIkOGEyZmVkNDAtZGIwMy00YWQ4LTgxOWUtMzJlZjgxOWZhZjFj2AIB4AIB&sid=2149d102e8ce1e54bc954a232367ee41&all_sr_blocks=5104616_279745981_0_2_0&checkin=2026-04-15&checkout=2026-04-18&dest_id=-1456928&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=2&highlighted_blocks=5104616_279745981_0_2_0&hpos=2&matching_block_id=5104616_279745981_0_2_0&nflt=ht_id%3D204&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=5104616_279745981_0_2_0__60170&srepoch=1774555176&srpvid=a3d48c8d3131005d&type=total&ucfs=1&"
-        //         },
-        //         {
-        //             "provider": "Booking.com",
-        //             "room": "Deluxe Double Room with Terrace | 1 queen bed | 17 m²",
-        //             "options": "Good   breakfast US$21 | Free cancellation before April 13, 2026 | No prepayment needed – pay at the property | •\n\n\n\nWe have 1 left",
-        //             "price_per_night": "$ 773",
-        //             "total_stay": "$ 773",
-        //             "link": "https://www.booking.com/hotel/fr/monceauwagram.html?aid=304142&label=gen173nr-10CAEoggI46AdIM1gEaE2IAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4ApWgls4GwAIB0gIkOGEyZmVkNDAtZGIwMy00YWQ4LTgxOWUtMzJlZjgxOWZhZjFj2AIB4AIB&sid=2149d102e8ce1e54bc954a232367ee41&all_sr_blocks=5104616_279745981_0_2_0&checkin=2026-04-15&checkout=2026-04-18&dest_id=-1456928&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=2&highlighted_blocks=5104616_279745981_0_2_0&hpos=2&matching_block_id=5104616_279745981_0_2_0&nflt=ht_id%3D204&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=5104616_279745981_0_2_0__60170&srepoch=1774555176&srpvid=a3d48c8d3131005d&type=total&ucfs=1&"
-        //         },
-        //         {
-        //             "provider": "Booking.com",
-        //             "room": "Superior Romantic Double Room | 1 king bed | 16 m²",
-        //             "options": "Good   breakfast US$21 | Free cancellation before April 13, 2026 | No prepayment needed – pay at the property | •\n\n\n\nWe have 1 left",
-        //             "price_per_night": "$ 791",
-        //             "total_stay": "$ 791",
-        //             "link": "https://www.booking.com/hotel/fr/monceauwagram.html?aid=304142&label=gen173nr-10CAEoggI46AdIM1gEaE2IAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4ApWgls4GwAIB0gIkOGEyZmVkNDAtZGIwMy00YWQ4LTgxOWUtMzJlZjgxOWZhZjFj2AIB4AIB&sid=2149d102e8ce1e54bc954a232367ee41&all_sr_blocks=5104616_279745981_0_2_0&checkin=2026-04-15&checkout=2026-04-18&dest_id=-1456928&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=2&highlighted_blocks=5104616_279745981_0_2_0&hpos=2&matching_block_id=5104616_279745981_0_2_0&nflt=ht_id%3D204&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=5104616_279745981_0_2_0__60170&srepoch=1774555176&srpvid=a3d48c8d3131005d&type=total&ucfs=1&"
-        //         },
-        //         {
-        //             "provider": "Booking.com",
-        //             "room": "Superior Triple Room | 1 full bed\n\n\nand\n\n\n\n1 sofa bed | 20 m²",
-        //             "options": "Good   breakfast US$21 | Free cancellation before April 13, 2026 | No prepayment needed – pay at the property | •\n\n\n\nWe have 1 left",
-        //             "price_per_night": "$ 849",
-        //             "total_stay": "$ 849",
-        //             "link": "https://www.booking.com/hotel/fr/monceauwagram.html?aid=304142&label=gen173nr-10CAEoggI46AdIM1gEaE2IAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4ApWgls4GwAIB0gIkOGEyZmVkNDAtZGIwMy00YWQ4LTgxOWUtMzJlZjgxOWZhZjFj2AIB4AIB&sid=2149d102e8ce1e54bc954a232367ee41&all_sr_blocks=5104616_279745981_0_2_0&checkin=2026-04-15&checkout=2026-04-18&dest_id=-1456928&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=2&highlighted_blocks=5104616_279745981_0_2_0&hpos=2&matching_block_id=5104616_279745981_0_2_0&nflt=ht_id%3D204&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=5104616_279745981_0_2_0__60170&srepoch=1774555176&srpvid=a3d48c8d3131005d&type=total&ucfs=1&"
-        //         }
-        //     ],
-        //     gl: 'us',
-        //     hl: 'en'
-        // }
-        await request.json();
+    var sourceRequest: RawBookRequest = await request.json();
 
     const leadOffer = await getLeadOffer(sourceRequest.bookingOffers);
     console.log("Lead Offer:", leadOffer);
@@ -96,6 +79,7 @@ export async function POST(request: Request) {
             gl: sourceRequest.gl,
             hl: sourceRequest.hl,
         };
+        console.log("Google Hotels Params:", params);
 
         var results = await google_detail("ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ", params.check_in_date, params.check_out_date, leadOffer.currency, occupancy.adults, occupancy.children);
         if (!results) {
@@ -106,10 +90,10 @@ export async function POST(request: Request) {
         // Le prix de référence Booking (le minimum trouvé sur la page)
         const totalBooking = leadOffer.parsed_total; // On utilise le prix "room only" de l'offre la moins chère comme référence pour le deal (plutôt que le prix avec petit-déjeuner)
 
+        console.log("Total Booking Reference:", totalBooking);
         const validDeals = normalizedResults
             // .filter(p => p.source.toLowerCase() !== 'booking.com')
             .map(p => {
-
                 return {
                     name: p.provider,
                     totalPrice: p.total,
@@ -118,11 +102,17 @@ export async function POST(request: Request) {
                 };
             })
             .filter(d => d.totalPrice > 0)
+            .filter((deal, index, self) =>
+                index === self.findIndex((t) => (
+                    t.name === deal.name && t.totalPrice === deal.totalPrice
+                ))
+            )
             .sort((a, b) => a.totalPrice - b.totalPrice)
             ;
 
         console.log("Valid Deals:", validDeals, totalBooking);
         const top3Deals = validDeals
+
             .slice(0, 3); // On prend les 3 premiers après le tri par prix
 
         if (top3Deals.length > 0) {
@@ -155,6 +145,7 @@ export async function POST(request: Request) {
                 });
 
                 return NextResponse.json({
+                    name: sourceRequest.hotelName,
                     hasDeal: true,
                     currency: leadOffer.currency,
                     totalBooking: totalBooking,

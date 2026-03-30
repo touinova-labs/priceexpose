@@ -282,19 +282,25 @@ async function setDisplaySettings(page: Page, currency: string = "MAD") {
 async function book_offers_extractor(page: any, checkin: string, checkout: string, currency: string, guests = 2, children = 0): Promise<BookingOffer[]> {
     // 1. Mise à jour des paramètres (Contexte Node)
     console.log("⚙️ Configuration des paramètres de recherche...", { checkin, checkout, guests, children });
-    if (!await setDates(page, checkin, checkout))
+    if (!await setDates(page, checkin, checkout)) {
+        console.error("❌ Erreur lors de la configuration des dates.");
         return []
+    }
     await _wait(400);
-    if (!await setGuests(page, guests, children))
+    if (!await setGuests(page, guests, children)){
+        console.error("❌ Erreur lors de la configuration des voyageurs.");
         return []
+    }
     await _wait(400);
     await waitForGoogleLoad(page);
 
-    console.log("⏳ settings...");
-    if (!await setDisplaySettings(page, currency))
-        return []
-    await waitForGoogleLoad(page);
-    await _wait(400);
+    // console.log("⏳ settings...");
+    // if (!await setDisplaySettings(page, currency)){ // not stable
+    //     console.error("❌ Erreur lors de la configuration des paramètres d'affichage.");
+    //     return []
+    // }
+    // await waitForGoogleLoad(page);
+    // await _wait(400);
 
     console.log("⏳ Récupération des offres...");
 
@@ -356,14 +362,15 @@ async function book_offers_extractor(page: any, checkin: string, checkout: strin
             const partner = el.querySelector('.RjilDd, .NiGhzc, h3')?.innerText.trim() ||
                 el.querySelector('img')?.getAttribute('alt') || "Partenaire";
 
-            results.push({
+            const result : BookingOffer = {
                 provider: partner,
                 room: cleanText(el.querySelector('.VuHI7')?.innerText) || "UNKNOWN",
                 options: cleanText(el.querySelector('.WL9xgc, .V5vyfc')?.innerText),
                 price_per_night: price,
-                total: el.querySelector('.UeIHqb')?.innerText.trim() || "N/A",
+                total_stay: el.querySelector('.UeIHqb')?.innerText.trim() || "N/A",
                 link: getDirectLink(el.href)
-            });
+            }
+            results.push(result);
         });
 
         return results;

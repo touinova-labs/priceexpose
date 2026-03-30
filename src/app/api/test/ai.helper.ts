@@ -167,7 +167,11 @@ export async function normalizeGoogleOffers(offers: BookingOffer[]): Promise<Nor
 
     const minimalOffers = offers.map((obj, index) => ({
         id: index,
-        txt: `${obj.options}, ${obj.price_per_night}, ${obj.total_stay}`
+        source_data: {
+            raw_options: obj.options,
+            price_per_night_label: obj.price_per_night, 
+            total_stay_label: obj.total_stay 
+        }
     }));
 
 
@@ -181,13 +185,13 @@ JSON Format:
 {
   "results": [{
     "id": number,
-    "total": 0.0, // Total price for the stay, Number only (e.g., "€ 552" -> 552)
-    "nightly": 0.0,// price per night: Number only, remove any currency symbols or separators
-    "currency": "EUR",// Infer currency from the price string (e.g., "€ 110" -> "EUR")
+    ""nightly": 0.0,    // Mandatory: Price for ONE night only. Number only.
+    "total": 0.0,        // Mandatory: Price for the ENTIRE stay. Number only.
+    "currency": "EUR",   // ISO 4217 code (e.g., "$"" -> "USD", "€" -> "EUR")
     "is_refundable": boolean,
-    "deadline": "string|null", // cancellation deadline Date or null
+    "deadline": "string|null", // cancellation deadline Date or null. the format : YYYY-MM-DD, if the year is missing, use ${new Date().getFullYear()}.
     "breakfast": boolean // true if breakfast is included, false otherwise
-    "breakfast_value": if "breakfast" is included, extract the price of the breakfast  if specified. Otherwise 0.
+    "breakfast_value": if "breakfast" is included, extract the price of the breakfast if specified. Otherwise 0.
 }]
 }
 
@@ -283,6 +287,7 @@ export async function getLeadOffer(offers: BookingOffer[]): Promise<BookingOffer
 `;
 
     try {
+        console.log("Sending to AI for Lead Extraction:", GROQ_API_KEY);
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
