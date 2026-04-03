@@ -1,106 +1,118 @@
 import { NextResponse } from 'next/server'
-import type { RawBookRequest } from './ai.helper';
-const { google_detail } = await import('../../../../public-data/google_detail');
+import { GoogleHotelMatch, isError, normalizeBookRequest, NormalizedBookRequest, RawBookRequest, resolveHotel } from '../../../../deal-finder';
+import { HotelScraperClient } from '../../../../scraper';
+import { normalize_BookingOffers } from '../../../../deal-finder/normalizeBookingOffers';
 
-// Initialisation du dossier de cache
+// Initialize HotelScraperClient
+const scraperClient = new HotelScraperClient({
+    baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || 'http://82.165.116.199:3000/api/hotels',
+    timeout: 60000
+});
 
-export async function GET() {
-    
-    const params = {
-        engine: 'google_hotels',
-        q: 'Paris Hotel Monge',
-        check_in_date: '2026-04-13',
-        check_out_date: '2026-04-16',
-        adults: 2,
-        children: 0,
-        currency: 'EUR',
-        gl: 'fr',
-        hl: 'fr'
+export async function GET1() {
+    try {
+        // Example: Get booking offers for a hotel
+        const googleId = "ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ"; // Hotel Monge
+        const offers = await scraperClient.getBookingOffers(
+            googleId,
+            '2026-04-13',
+            '2026-04-16',
+            { currency: 'EUR', guests: 2, children: 0 }
+        );
+
+        if (!offers || offers.length === 0) {
+            return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, offers });
+    } catch (error) {
+        console.error('GET error:', error);
+        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
-    // monge
-    var results = await google_detail("ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ", params.check_in_date, params.check_out_date, params.currency, params.adults, params.children);
-    if (!results) {
-        return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
-    }
-    if (!results) {
-        return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
-    }
-    // var g = await normalizeGoogleOffers(results)
-    // console.log(g);
-    return NextResponse.json(results);
 }
 
-export async function POST2(request: Request) {
-    const data = await request.json();
-    return NextResponse.json({
-        name: data.hotelName,
-        hasDeal: true,
-        currency: "EUR",
-        totalBooking: 50,
-        type: "BACKEND_RESPONSE",
-        deals: [
-            {
-                source: "SITE 1",
-                totalPrice: 12,
-                url: "https://opdp.com",
-                isOfficial: false,
-            },
-            {
-                source: "SITE 2",
-                totalPrice: 34,
-                url: "https://opdp.com",
-                isOfficial: false,
-            },
-        ]
-    });
-}
+// export async function POST2(request: Request) {
+//     const data = await request.json();
+//     return NextResponse.json({
+//         name: data.hotelName,
+//         hasDeal: true,
+//         currency: "EUR",
+//         totalBooking: 50,
+//         type: "BACKEND_RESPONSE",
+//         deals: [
+//             {
+//                 source: "SITE 1",
+//                 totalPrice: 12,
+//                 url: "https://opdp.com",
+//                 isOfficial: false,
+//             },
+//             {
+//                 source: "SITE 2",
+//                 totalPrice: 34,
+//                 url: "https://opdp.com",
+//                 isOfficial: false,
+//             },
+//         ]
+//     });
+// }
 
 
 export async function POST(request: Request) {
-    const { getLeadOffer, parseOccupancy, parseTravelDates, normalizeGoogleOffers } = await import('./ai.helper');
-    const { google_detail } = await import('../../../../public-data/google_detail');
-    
-    var sourceRequest: RawBookRequest = await request.json();
 
-    const leadOffer = await getLeadOffer(sourceRequest.bookingOffers);
-    console.log("Lead Offer:", leadOffer);
-    if (!leadOffer) {
-        return NextResponse.json({ hasDeal: false });
-    }
-
-    var occupancy = await parseOccupancy(sourceRequest.travelers);
-    var travel_dates = await parseTravelDates(sourceRequest.checkIn, sourceRequest.checkOut);
     try {
-        const params = {
-            engine: "google_hotels",
-            q: `${sourceRequest.destination} ${sourceRequest.hotelName}`,
-            check_in_date: travel_dates ? travel_dates.check_in : formatDateForAPI(sourceRequest.checkIn),
-            check_out_date: travel_dates ? travel_dates.check_out : formatDateForAPI(sourceRequest.checkOut),
-            adults: occupancy.adults.toString(),
-            children: occupancy.children.toString(),
-            currency: leadOffer.currency,
-            gl: sourceRequest.gl,
-            hl: sourceRequest.hl,
-        };
-        console.log("Google Hotels Params:", params);
 
-        var results = await google_detail("ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ", params.check_in_date, params.check_out_date, leadOffer.currency, occupancy.adults, occupancy.children);
-        if (!results) {
-            return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
+        var sourceRequest: RawBookRequest = await request.json();
+
+        const normalizedOrError = await normalizeBookRequest(sourceRequest);
+        if (isError(normalizedOrError)) {
+            return NextResponse.json({ hasDeal: false, ...normalizedOrError }, { status: 400 });
         }
-        var normalizedResults = await normalizeGoogleOffers(results);
+        const normalized = normalizedOrError as NormalizedBookRequest;
+        console.log("Normalized Request:", normalized);
+
+
+        var hotelOrError = await resolveHotel(normalized);
+        if (isError(hotelOrError)) {
+            return NextResponse.json({ hasDeal: false, ...hotelOrError }, { status: 404 });
+        }
+        const hotel = hotelOrError as GoogleHotelMatch;
+        console.log("Resolved Hotel:", hotel);
+
+        // Use HotelScraperClient instead of google_detail
+        const bookingOffers = await scraperClient.getBookingOffers(
+            hotel.propertyToken,
+            normalized.checkIn,
+            normalized.checkOut,
+            {
+                currency: normalized.currency,
+                guests: normalized.adults,
+                children: normalized.children
+            }
+        );
+
+        if (!bookingOffers || bookingOffers.length === 0) {
+            return NextResponse.json({ hasDeal: false, error: "No offers found" }, { status: 200 });
+        }
+        console.log("Raw Booking Offers:", bookingOffers.length);
+
+        const normalizeBookingOffers = await normalize_BookingOffers(bookingOffers);
+        if (!normalizeBookingOffers) {
+            return NextResponse.json({ hasDeal: false, error: "Failed to normalize booking from provider" }, { status: 500 });
+        }
+        console.log("Normalized Booking Offers:", normalizeBookingOffers.length);
 
         // Le prix de référence Booking (le minimum trouvé sur la page)
-        const totalBooking = leadOffer.parsed_total; // On utilise le prix "room only" de l'offre la moins chère comme référence pour le deal (plutôt que le prix avec petit-déjeuner)
-
+        const totalBooking = normalized.leadOffer.parsed_total;
         console.log("Total Booking Reference:", totalBooking);
-        const validDeals = normalizedResults
-            // .filter(p => p.source.toLowerCase() !== 'booking.com')
-            .map(p => {
+
+        // Transform bookingOffers to the format expected by the rest of the code
+        // todo normalize total_stay to a number (remove currency symbol, handle different formats)
+        const validDeals = normalizeBookingOffers
+            .map(offer => {
                 return {
-                    name: p.provider,
-                    totalPrice: p.total,
-                    link: p.link,
+                    name: offer.provider.replace(/\n+/g, " "),
+                    totalPrice: offer.totalStay,
+                    link: offer.link,
                     isOfficial: false
                 };
             })
@@ -115,7 +127,6 @@ export async function POST(request: Request) {
 
         console.log("Valid Deals:", validDeals, totalBooking);
         const top3Deals = validDeals
-
             .slice(0, 3); // On prend les 3 premiers après le tri par prix
 
         if (top3Deals.length > 0) {
@@ -150,7 +161,7 @@ export async function POST(request: Request) {
                 return NextResponse.json({
                     name: sourceRequest.hotelName,
                     hasDeal: true,
-                    currency: leadOffer.currency,
+                    currency: normalized.leadOffer.currency,
                     totalBooking: totalBooking,
                     bestSavings: Math.round(savings),
                     bestSavingsPercent: Math.round(savingsPercent),
@@ -169,37 +180,6 @@ export async function POST(request: Request) {
             error: "Impossible de récupérer les prix Google Hotels"
         }, { status: 500 });
     }
-}
-
-/**
- * Transforme "Fri, Apr 24" ou "24 avr. 2026" en "2026-04-24"
- */
-function formatDateForAPI(dateInput: string | Date): string {
-    let date: Date;
-
-    if (dateInput instanceof Date) {
-        date = dateInput;
-    } else {
-        // Si l'année manque (ex: "Fri, Apr 24"), on l'ajoute
-        const year = new Date().getFullYear(); // 2026
-        const dateString = dateInput.includes(year.toString())
-            ? dateInput
-            : `${dateInput} ${year}`;
-
-        date = new Date(dateString);
-    }
-
-    // Sécurité si la date est invalide
-    if (isNaN(date.getTime())) {
-        return new Date().toISOString().split('T')[0];
-    }
-
-    // Formatage YYYY-MM-DD local (évite les décalages de fuseau horaire de toISOString)
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-
-    return `${y}-${m}-${d}`;
 }
 
 export async function OPTIONS() {

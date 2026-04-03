@@ -1,0 +1,11 @@
+[
+  {
+    "hotelName": "Hotel Monge",
+    "address": "5e arr., Paris",
+    "destination": "Paris",
+    "sourcePlatform": "BOOKING",
+    "sourcePlatformId": "monge-paris7.fr.html",
+    "timestamp": "2026-04-02T20:52:05.034Z",
+    "attempted": 5
+  }
+]
