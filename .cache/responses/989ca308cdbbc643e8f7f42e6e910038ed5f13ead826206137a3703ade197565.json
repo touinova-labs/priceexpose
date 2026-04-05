@@ -1,0 +1,31 @@
+{
+  "name": "Hôtel Le Ballu",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 912,
+  "bestSavings": 120,
+  "bestSavingsPercent": 13,
+  "deals": [
+    {
+      "source": "Agoda",
+      "totalPrice": 792,
+      "savings": 120,
+      "url": "https://www.agoda.com/fr-fr/partners/partnersearch.aspx?site_id=1917614&CkInDay=12&CkInMonth=05&CkInYear=2026&CkOutDay=15&campaignid=&CkOutMonth=05&CkOutYear=2026&SearchDateType=selected&NumberOfAdults=2&LT=39&NumberOfChildren=0&childages=&NumberOfRooms=1&gsite=localuniversal&los=3&PartnerCurrency=EUR&hid=8663409&RoomID=104330766&masterRoomId=676546614&PriceTax=135.85&PriceTotal=792.21&RatePlan=&UserCountry=FR&Currency=EUR&UserDevice=desktop&Verif=false&rr=EEA_pull&audience_list=&mcid=27982&booking_source=cpc&adType=0&mpt=dm9GUGx0K2V4cE1nVVJobWpRMW8vQXRtck9SWngzc1ZreVhwMHF6OU1TeTRpQU1UTC90a3BpTWd1RDdraUxoNGxuM0JDWmRjbnQyVU5RPT0&original_rr=EEA_pull&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Super.com",
+      "totalPrice": 825,
+      "savings": 87,
+      "url": "https://www.super.com/travel/transition/?data=price=686.24&total_price=754.85&surcharge=70.48&request_id=20236fee-00cb-49d9-9617-b90bddbaa9c7&ps=296306&pp=npvhgMPgFFwMQUSn1Wkm7w&pb=JUuwiYw9fslmfJxFwIHjwM2rZtjciwhmdX-pAhtgClIGzMw-weE829cVvKfakUnMvxwfAPgMictF5uNcq5bw5NMkb8QEyMT19Hgw3UpxDOLijxBYT3WAebFq2grLyw8RDuTtBBeAt1Og-DoMi7Xh7ubdFCbWbGHCAOpb9pblQmcHpXb600EnbfN8J7GaJTqBVCqopAraGu7NE9UcsjBqJLme4hvzKJuh2O6S4lalMe2fnm4uFI9OWQhZkfJayxNPaLhhgOr068umrsSjaQHrGu5_nWWNFwDvAamqUQLdru7tVN7-CfsvWv_ARhAfwXnbL8FN6xjpm01x6_HMKF3_BvZyG2KURne-5znVOy2BfSC0ggKTxQJQIiODnVSi3lpT&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775234477&sg=JIqWU&sid=GHA_MD7&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=825.34&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10012200795&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Evendo",
+      "totalPrice": 835,
+      "savings": 77,
+      "url": "https://evendo.com/stays/hotel-le-ballu/00160409?check_in=2026-05-12&check_out=2026-05-15&who=[{\"adults\":2,\"children\":[]}]&currency=EUR&language=fr&country=FR&utm_source=google&utm_medium=googlehotels&utm_campaign=localuniversal&pdtax=137.98&pdtotal=834.99&prid=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

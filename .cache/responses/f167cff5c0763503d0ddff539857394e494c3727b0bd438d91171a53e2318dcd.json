@@ -1,0 +1,31 @@
+{
+  "name": "HotelF1 Paris Saint Ouen Marché Aux Puces",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 234,
+  "bestSavings": 24,
+  "bestSavingsPercent": 10,
+  "deals": [
+    {
+      "source": "Super.com",
+      "totalPrice": 210,
+      "savings": 24,
+      "url": "https://www.super.com/travel/transition/?data=price=171.82&total_price=188.99&retail_price=227.14&retail_total_price=249.84&surcharge=20.84&request_id=ce7ede8c-1ddb-41b3-b800-96192ab393d6&ps=2046002774&pp=PJ5mevLcbFxF4RyXDXe-1w&pb=-p9-tuYJdXLh502ZHwBmw8VJPZ56l61Kn7str9URILpGeZEA5jS1lPGigG2ScaviUTjR0lNPLUjM8nR57vWHcZP--seJ1u6jDfpU1EmKo1bKOso2CqbhqysHLlHdXn1VTD8UnnGub3IlASgmDiXWBo_ang9LtX3cx_9v4AULBIvWSm1OKZWAXtGpgZDApmGRRoPI_d2sdh_qCLyslGEf56unDu-ImfgZMY1dCwqDkH6m8z-aq4XSmWkFFz8ZMLyPc7n_YNxsJ5tWFjs5F1mmoB5VRpQCjXgkE8kj_-7O4MpiagUATMbxEx5Cijv4ckJnwgIYBwDxi6lWXfs6JZ86PhpQd8MCDom08rrhsrwLgAptjXh18KsdA3hD4LH7g_-E&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775421862&sg=4qccC&sid=GHA_MD5&cmab_id=13&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=209.83&checkin_at=2026-04-14&checkout_at=2026-04-18&provider_hotel_id=10006250493&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Agoda",
+      "totalPrice": 213,
+      "savings": 21,
+      "url": "https://www.agoda.com/fr-fr/partners/partnersearch.aspx?site_id=1917614&CkInDay=14&CkInMonth=04&CkInYear=2026&CkOutDay=18&campaignid=&CkOutMonth=04&CkOutYear=2026&SearchDateType=selected&NumberOfAdults=2&LT=9&NumberOfChildren=0&childages=&NumberOfRooms=1&gsite=localuniversal&los=4&PartnerCurrency=EUR&hid=10257005&RoomID=849110617&masterRoomId=849110617&PriceTax=19.38&PriceTotal=213.29&RatePlan=551aad57-f55c-a052-b4f0-cd2aac502cdc&UserCountry=FR&Currency=EUR&UserDevice=desktop&Verif=false&rr=row_desktop&audience_list=&mcid=29004&booking_source=cpc&adType=0&mpt=QXZYcFJVMFNYMUdJQWZUdWd1VlFuZ0QyaEZZMnV1TUpIR2NVK2Y5SXNRQU94VmRWZ1RZY2NYRU5XSkF1U3JVSldZdGlDYUdvMUpIUTVBPT0&original_rr=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Reservation Day",
+      "totalPrice": 221,
+      "savings": 13,
+      "url": "https://www.reservationday.com/transition/?data=price=209.89&total_price=230.87&retail_price=262.37&retail_total_price=288.59&surcharge=24.0&request_id=443df825-1e45-43f7-8cda-828a33431e9c&ps=2046002774&pp=5JCgxHIU8kKS0wUE3vKMyQ&pb=JgI1Q-3YLLRD7JoirqWXlidb5e4qr4fNg_utUaGeqWTFGMwTwnDkjBVmouFDbdsOgkb7WJN6fb_XQXM0xputH0Nx-mReLE3yHILHH_hpegDyoJJNZ_ur03d4FJeKhZP2cbXIRGf-8mL-ZfWxNL9-JG0hl2emZ1dGBqLa-H6ZsSbL89KzMZcl0i-Bvm5Kjxl81D-jHPPU0rebRMwpOokfyso2QsVjPxNwwZJw6ZKlZyvNTmZxNYjUb4eiCKC6LrGDnjewy2SFiT-M1axktP6_AUgNCETopEzt6y9h8-I7Pev3GKQgYHgV_A_gyEg-5B7B&gha_rd_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=false&alwd_risk=false&alwd_rand=false&gt=1775418744&sg=zUG-u&ttl_bkt=none&all_inclusive=false&utm_source=gha_rd&utm_content=localuniversal&currency=USD&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=221.18&checkin_at=2026-04-14&checkout_at=2026-04-18&provider_hotel_id=10006250493&provider=ean&num_adults=2&children=[]&hotel_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic_rd&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

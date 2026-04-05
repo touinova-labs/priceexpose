@@ -1,0 +1,31 @@
+{
+  "name": "B&B HOTEL Paris 17 Batignolles",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 418,
+  "bestSavings": 71,
+  "bestSavingsPercent": 17,
+  "deals": [
+    {
+      "source": "Amimir.com",
+      "totalPrice": 347,
+      "savings": 71,
+      "url": "https://www.amimir.com/fr/book/?start=12/05/2026&end=15/05/2026&hotelId=42262&highlightHotel=true&hab1=2&ehab1=&metasearch&utm_content=42262&checkV=false&totalPrice=347.00&userCountry=FR&utm_source=googleMetasearch&utm_medium=organic&currency=EUR&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Hotelsnest.com",
+      "totalPrice": 352,
+      "savings": 66,
+      "url": "https://www.hotelsnest.com/hb/hotels/139434?checkin-date=2026-05-12&checkout-date=2026-05-15&num-adults=2&price=351.71&currency=EUR&room=DBL.ST&rate=DBL.ST_DBL.ST|NRF|BOOKABLE|RO&num-children=0&hotel-id=139434&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Super.com",
+      "totalPrice": 354,
+      "savings": 64,
+      "url": "https://www.super.com/travel/transition/?data=price=291.7&total_price=320.86&surcharge=33.44&request_id=ed8d2ca9-cc8b-4336-a910-a56e59867857&ps=22284431&pp=-vlTXpJSJoViIzoVmZOrNw&pb=6p4MslvAJDID8-lp4T7TivJShChS1Rje3i8sRqMYyOPIRUHdXYrafv6yF-ts_6NZdbddm-GmAcoeP9O6MdGjE9ib7frNTpAYpKq7VQktLOTUa7Om1tumGUZk8gRrADISWyK6yNgXe3HlTF7HKwHIUsjUwDb6FcTG7V88m4vk9TJGV_8D6UVv9pt_uZjHSy_WQFG3_lWGsepltZOTwQRotE1F3OFw59VZqp4EYqFeXk6S5pOIOk6S_mbOX8wVv7AmlaS_5VuqOrttXcQDsW_cYi8pyQqd3uxTigPVpyQuUI9Q7kS5ja4ZXz4_vfD8aEsVphQqX5NvYsFK11ysnSsuDep3vrDxJaLhwtNc2RIFxUFfqWdCCP9KB2zn5Ae_zOnx&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775248545&sg=IELmu&sid=GHA_MD8&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=354.31&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10004456265&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Hipotel Paris Gambetta République",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 265,
+  "bestSavings": 35,
+  "bestSavingsPercent": 13,
+  "deals": [
+    {
+      "source": "Agoda",
+      "totalPrice": 230,
+      "savings": 35,
+      "url": "https://www.agoda.com/fr-fr/partners/partnersearch.aspx?site_id=1917614&CkInDay=12&CkInMonth=05&CkInYear=2026&CkOutDay=15&campaignid=&CkOutMonth=05&CkOutYear=2026&SearchDateType=selected&NumberOfAdults=2&LT=39&NumberOfChildren=0&childages=&NumberOfRooms=1&gsite=localuniversal&los=3&PartnerCurrency=EUR&hid=10284896&RoomID=126600053&masterRoomId=126600053&PriceTax=38.69&PriceTotal=230.43&RatePlan=eae85e5b-3423-472f-eec2-8eac62c42a4b&UserCountry=FR&Currency=EUR&UserDevice=desktop&Verif=false&rr=EEA_mobile&audience_list=&mcid=332&booking_source=cpc&adType=0&mpt=VGVDSS9iV1l1WlYyWitxOWhUd2plRzN1L0NncFZBRUNPS3FwZE5Sc2doekNiSHZ2ZzlhODM3QmdIbXdDTmdYamt3VjM5dkU1Mm1TbQ&original_rr=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Expedia.fr",
+      "totalPrice": 263,
+      "savings": 2,
+      "url": "https://www.expedia.fr/Hotel-Search?selected=8729648&startDate=2026-05-12&endDate=2026-05-15&MDPCID=FR.META.HPA.HOTEL-ORGANIC-desktop.HOTEL&MDPDTL=HTL.8729648.20260512.20260515.DDF.39.CID..AUDID..RRID.bex_fr_desktop&adults=2&children=&mctc=10&ct=hotel&mpg=EUR&mpf=263.44&mpj=41.68&mpr=0.00&mpl=EUR&exp_pg=google&langid=fr&ad=2&tp=&utm_source=google&utm_medium=cpc&utm_term=8729648&utm_content=localuniversal&utm_campaign=HotelAds&rateplanid=203982242&mpm=24&mpn=200744304&mpo=EC&mpp=1&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Super.com",
+      "totalPrice": 268,
+      "savings": -3,
+      "url": "https://www.super.com/travel/transition/?data=price=225.45&total_price=247.99&surcharge=19.56&request_id=75b3c877-a9cd-4502-a985-d7e6fe236a89&ps=704737293624952&pp=s1YB89Z1k4fo3x103HZpEg&pb=aN6_ei-wQBzLBpgMoH2yIWy5PSltcmt_mgB1nV4_NZZqgOJoIZhu3ddWVk13eMarGPY-_AfRfuirnc10z3LNofO6pjLdnxqqeUn3EjsCSiqUqhBypHAVLNRQSQ4qjdx1zNwnBKEffRhqrS4t3OaGQzth8SRJCH5MR-yAqL3KOzg1py_x9Ow-tyIIBvHnm-x1tRpFQlCSgLrgklMxEXG7l-vV8LDUIOqm7ZQIDHZtLkrujzGAbszqeiyU4M6eaaB0nOrJQ8bp-ezyrhkhJIMpJxYPpUQVVoNQassZEC4L573Vb3GaSY7hoJ5C52y6Okw6xOBiaXVJoL86ayY-xms9a0fMIQsyV4WsUFpsbgd5AugNr_KGlcBjfbx_06VGyxML&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775243336&sg=8t1q1&sid=GHA_MD7&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=267.56&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10004960135&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Hôtel Orchidée",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 453,
+  "bestSavings": 79,
+  "bestSavingsPercent": 17,
+  "deals": [
+    {
+      "source": "Agoda",
+      "totalPrice": 374,
+      "savings": 79,
+      "url": "https://www.agoda.com/fr-fr/partners/partnersearch.aspx?site_id=1917614&CkInDay=12&CkInMonth=05&CkInYear=2026&CkOutDay=15&campaignid=&CkOutMonth=05&CkOutYear=2026&SearchDateType=selected&NumberOfAdults=2&LT=39&NumberOfChildren=0&childages=&NumberOfRooms=1&gsite=localuniversal&los=3&PartnerCurrency=EUR&hid=236517&RoomID=5020237&masterRoomId=3577052&PriceTax=33.97&PriceTotal=373.62&RatePlan=&UserCountry=FR&Currency=EUR&UserDevice=desktop&Verif=false&rr=EEA_pull&audience_list=&mcid=28222&booking_source=cpc&adType=0&mpt=Wmp5WEJWd2piejFVUlI2Vm4wUUZjK2wwRzFrU08vanBzaEErMWo1ZlVQblZVdWFYZlg1azhheDh2ZnEvTHBFVWNHaEtjRTFNQ2w0TQ&original_rr=EEA_pull&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Hôtel Orchidée  Site officiel",
+      "totalPrice": 396,
+      "savings": 57,
+      "url": "https://wtbngprod-cdn.official-rates.com/xml/fichesatellite.phtml?tosite=tmphotel&from=Dist-GHP&DistNum=TAFR48832319&fromdate=2026-05-12&todate=2026-05-15&lg=fr&nbadult=2&currency=EUR&tdp=396.00&vrfc=false&offercode=105453_HOTEL-EARLY-RO&roomId=105453&usercountry=FR&device=desktop&price=396.00&organicLink=true&rateId=&ari=1&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Super.com",
+      "totalPrice": 406,
+      "savings": 47,
+      "url": "https://www.super.com/travel/transition/?data=price=338.46&total_price=372.3&retail_price=426.74&retail_total_price=469.41&surcharge=33.31&request_id=524ba9d5-b99a-4724-933f-decf2a40a622&ps=296306&pp=XjjyE1EYEtFJVs_727wIQQ&pb=pY82Cp6e7IE_ncUceWmquRYHAjts9vgjeyAngvyOrnd70x2cExiIKkToQg9-AKjE59ZzCPY4qmrkwL9pU9Z54fyodECkD7cwARwWjxGV8StwrVPSPmh0iRMl953rdnOHcfTtIOOxiZAD5bDnoAbjBM6Ksi00At0TJpU_D5BqQIeIvDs-XKlR9ipnb6XmkASECO52HAhkYHHBjIbj59zYHJTmyroNDJkaUjSZngeVA2o9HK51nnlBexYHQuiN0IdbkfGMiG0JxuoQKxo6PzWVugAqLB8xSpQaM6dYizlFtjDxTUZMN0JDAqiK3oR6AbtUeWptq1x0gTHXofB16FJre7QEWlvy15lOtimpvClniY8KI6rsqrDiiJ6BEVcdb94F&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775248228&sg=qe8lq&sid=GHA_MD7&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=405.61&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10004027160&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Aparthotel Adagio Access Paris La Villette",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 378,
+  "bestSavings": 60,
+  "bestSavingsPercent": 16,
+  "deals": [
+    {
+      "source": "Super.com",
+      "totalPrice": 318,
+      "savings": 60,
+      "url": "https://www.super.com/travel/transition/?data=price=259.13&total_price=285.04&retail_price=426.52&retail_total_price=469.17&surcharge=32.99&request_id=93b77c03-5ae6-469c-954e-4508a4973fd8&ps=296306&pp=D2vCbtOwz8LPDbG225X0Tg&pb=m2oZxxuNoXRsFIChc5VovYlgCNnAGb0aP12ZdiLaZOmzgG3PZgY_IGh6H8nnKKAo7wB6JyBrlGehsGLBLvNsEv9NocfO1M9SOSkc27B3ipCvPWWoPe7GPbImMN_9CLliyBv_hzRsBhNnv8lFFE6LMqJj1Sw8mHQOTxvLwl4MNoKGlB_1GLvnVwGWUXuwcYGe94UG4_IanK1fEckWhJrseOvEK3VyS_anpZ9IAoo4i8TTd6o2FQYKFpK5eL3-GHR7U4NkAqMq1R26jc6jPBlZI3hQnpQp1TTGZ78xBZQf7kLdMThRowj4TvNXjPMGgJPioVKlITUqHRdIKaskqLEOG3E85sDJ3ON35GFzaq7dtfUJDHE4h2T1qQtrIliflBZO&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775247376&sg=1d0wn&sid=GHA_MD7&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=318.03&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10006918289&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Reservation Day",
+      "totalPrice": 334,
+      "savings": 44,
+      "url": "https://www.reservationday.com/transition/?data=price=315.48&total_price=347.03&retail_price=492.67&retail_total_price=541.94&surcharge=38.02&request_id=792e9067-8af4-4a3d-91d9-a243b87ccfae&ps=22284431&pp=7B7FCw1NnU4YuSNIbPgYXQ&pb=Xn_ozaZKjSfWaTWNqYOep58EU8N1_L24AN4rkL_Mqorb1gH5El2FHFAN-5z9f3NljyC5Z9YGn6W4ROTlaeSQpS-h-egUUdJGHJPkuyQvKiq__-5Cu4_6K81G5iOjYWyklYPWKdwv4OEI6FVZrakyWleVSho8K4ce9MeBZGlHvp5aD3NsVG9KdyKXp6AkctLw7FxVcQz9O6UTcJYYe-rdkEc0rVYJVu5onM-cu9cTmthb2kGL55_rIw9O2v8FJ6F-JVgj9AlSGxDXLYCTshFAyZ2oQgjEfK734saKS2qWA80%3D&gha_rd_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=false&alwd_risk=false&alwd_rand=false&gt=1775245172&sg=0Y5nR&ttl_bkt=none&all_inclusive=false&utm_source=gha_rd&utm_content=localuniversal&currency=USD&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=334.26&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10006918289&provider=ean&num_adults=2&children=[]&hotel_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic_rd&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Evendo",
+      "totalPrice": 344,
+      "savings": 34,
+      "url": "https://evendo.com/stays/adagio-access-paris-la-villette/13095718?check_in=2026-05-12&check_out=2026-05-15&who=[{\"adults\":2,\"children\":[]}]&currency=EUR&language=fr&country=FR&utm_source=google&utm_medium=googlehotels&utm_campaign=localuniversal&pdtax=61.40&pdtotal=343.65&prid=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

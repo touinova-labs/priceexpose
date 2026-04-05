@@ -46,10 +46,10 @@ export class HotelScraperClient {
    * );
    * console.log(`Found ${hotels.length} hotels`);
    */
-  async discoverHotels(searchUrl: string): Promise<Hotel[]> {
+  async discoverHotels(searchUrl: string): Promise<DiscoverResult['data']> {
     return this.makeRequest<DiscoverResult>('/discover', {
       url: searchUrl,
-    }).then(result => result.hotels);
+    }).then(result => result.data);
   }
 
   /**
@@ -68,12 +68,12 @@ export class HotelScraperClient {
     });
 
     return {
-      hotelName: result.data.hotelName,
-      address: result.data.address,
-      postalCode: result.data.postalCode,
+      hotel_name: result.data.hotel_name,
+      street_address: result.data.street_address,
+      postal_code: result.data.postal_code,
       city: result.data.city,
       country: result.data.country,
-      phoneNumber: result.data.phoneNumber,
+      telephone_number: result.data.telephone_number,
     };
   }
 
@@ -108,75 +108,6 @@ export class HotelScraperClient {
       guests: options?.guests || 2,
       children: options?.children || 0,
     }).then(result => result.data);
-  }
-
-  /**
-   * Complete hotel search workflow
-   * Discovers hotels, enriches each one, and fetches booking offers
-   * @param searchUrl - Google Hotels search URL
-   * @param checkin - Check-in date (YYYY-MM-DD)
-   * @param checkout - Check-out date (YYYY-MM-DD)
-   * @param limit - Maximum number of hotels to process (default: 5)
-   * @param options - Optional parameters (currency, guests, children)
-   * @returns Array of hotels with details and offers
-   *
-   * @example
-   * const results = await client.searchHotels(
-   *   'https://www.google.com/travel/search?q=hotels+paris',
-   *   '2026-04-13',
-   *   '2026-04-16',
-   *   10,
-   *   { currency: 'EUR' }
-   * );
-   *
-   * results.forEach(result => {
-   *   console.log(`${result.details.hotelName} - ${result.offers.length} offers`);
-   * });
-   */
-  async searchHotels(
-    searchUrl: string,
-    checkin: string,
-    checkout: string,
-    limit: number = 5,
-    options?: BookingOffersOptions
-  ): Promise<
-    Array<{
-      hotel: Hotel;
-      details: HotelDetails;
-      offers: BookingOffer[];
-    }>
-  > {
-    const hotels = await this.discoverHotels(searchUrl);
-    const results = [];
-
-    for (const hotel of hotels.slice(0, limit)) {
-      try {
-        const details = await this.enrichHotel(hotel.googleId);
-        const offers = await this.getBookingOffers(
-          hotel.googleId,
-          checkin,
-          checkout,
-          options
-        );
-
-        results.push({
-          hotel,
-          details,
-          offers,
-        });
-
-        // Add small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } catch (error) {
-        console.error(
-          `Failed to process hotel ${hotel.name}:`,
-          error instanceof HotelScraperError ? error.message : error
-        );
-        continue;
-      }
-    }
-
-    return results;
   }
 
   /**

@@ -1,0 +1,31 @@
+{
+  "name": "B&B HOTEL Paris Porte des Lilas",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 325,
+  "bestSavings": 48,
+  "bestSavingsPercent": 15,
+  "deals": [
+    {
+      "source": "Amimir.com",
+      "totalPrice": 277,
+      "savings": 48,
+      "url": "https://www.amimir.com/fr/book/?start=12/05/2026&end=15/05/2026&hotelId=116956&highlightHotel=true&hab1=2&ehab1=&metasearch&utm_content=116956&checkV=false&totalPrice=277.00&userCountry=FR&utm_source=googleMetasearch&utm_medium=organic&currency=EUR&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Super.com",
+      "totalPrice": 277,
+      "savings": 48,
+      "url": "https://www.super.com/travel/transition/?data=price=234.36&total_price=257.79&retail_price=283.42&retail_total_price=311.76&surcharge=19.46&request_id=93b77c03-5ae6-469c-954e-4508a4973fd8&ps=296306&pp=nl3UqvSf-MSLGdAVtUNqMQ&pb=LkXOGyxZYfAi-ENxEAdPYWCB_O7GEkEevv4ar5-2qVZJjgZCEgMKQkriVVX1u6fgZ2OzEbijpBEiKT86RMAdBn2N-AwS4T-vqudykWIAFwMB1yEb5QiDyYbREZPEtyJoa0N05sV4mqRiB-uLpbhy-MnHrGmxqxYDcvxUG2y7SzYF_o9vwDRdqQI56T4bbDsw45DpzHa5U-0Io9dHQ4Ca9CIZyZ7SVqRo6aoHG2ozttXFhbzk_GjG5kXSWlM1Jafl5OKVNELz5G3XxUU11t8M7UmTAC16nJmcDCs6o9t03mprmRusU-dkn54Dj_4CiThLg_w_QBLvW48lBSytIsir6roguG6p85tZ8Q196mvfqWbSJcqMEaIFxlYDDnfm0bGk&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775247376&sg=2rD_d&sid=GHA_MD7&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=277.25&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10005727853&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "trivago DEALS",
+      "totalPrice": 281,
+      "savings": 44,
+      "url": "https://www.trivago.deals/hotels/france_07_paris/401121_bb-htel-paris-porte-des-lilas?checkIn=2026-05-12&checkOut=2026-05-15&placeId=H401121&campaignName=TrivagoDeals_Google_FR&currencyCode=EUR&dealKey=CAIQuwYiDAjSucDOBhDsnty1AypHDQAArkIVAACWQyUK171BMAE4BEUAgIJDSgsIyrnAzgYQrMbVHGIKU3RhbmRhcmQgVGgCfQAAnEGNAQpXrkKgAZToIKgByAYwxwY44b0YQKDzD0gDUgj6apo9C43S6ljSBw&countryCode=FR&languageCode=fr&rule=Google_FR&site=localuniversal&ads=&origin=31&priceDisplayedTotal=280.50&priceDisplayedTax=43.23&device=desktop&adults=2&children=0&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

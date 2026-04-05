@@ -1,0 +1,31 @@
+{
+  "name": "Hôtel Dame des Arts",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 2046,
+  "bestSavings": 421,
+  "bestSavingsPercent": 21,
+  "deals": [
+    {
+      "source": "Super.com",
+      "totalPrice": 1625,
+      "savings": 421,
+      "url": "https://www.super.com/travel/transition/?data=price=1515.22&total_price=1557.21&surcharge=67.83&request_id=92232eed-22dc-46f0-9964-194a8407a1f9&ps=296306&pp=CcPaumgwCOztWJS2N_k7nw&pb=K7cG6U-klWtrl_XBkB6aW-a8TkTc8zRNsw0EiZglgKvvu8pdiB_uMSwI5r0uwu7vQv7dJUKD2eULF0weCbPH-pbcC8F08gEcL6nLSbxU_kCFzJTxx5NPmIixj7bQLtLCw8AIHpi8FnRcs2Y83wjkpxm0LMFwwg6vee-7do2O08y2rxtMHdbn39W0t090Llbj32AyhIG9JQfqsw_eicEl95nPhkfSNbkz_qpPEYHJuGqy_AGwKZPoGOo5FmzTH1bucoHuf8eO_eCFGSEXLodCRD1ZBlFecEqJi80CdCjzhY7NjljOKJI6TM0qj28H9Wf2Zk-v_Kkyrp5Huwupa2X0DQ1vZj5ql6cQ7aDx4SweaZRk94uNvnl_6FXLU8M4oP8j&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775418618&sg=-ESYU&sid=GHA_MD7&cmab_id=13&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=1625.04&checkin_at=2026-04-14&checkout_at=2026-04-18&provider_hotel_id=10004027382&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Reservation Day",
+      "totalPrice": 1712,
+      "savings": 334,
+      "url": "https://www.reservationday.com/transition/?data=price=1843.69&total_price=1894.84&surcharge=78.34&request_id=7e732e94-cd09-48d2-8b4b-e1e19a732923&ps=296306&pp=ILCakrqaPYeR88dnecuV8A&pb=nMgnE92X_8-UyqxFNJi1DS6Ky_AqeHX4ZT_82W5EtPFuHGbWQz-UIcYD2ECxQq7ujlbX9c-E-6lF6w4KGrD8sfFvQQbCifcNVOrf-YCYGblk2B-l6F9IDrzC5QpTLdsht6GsHNiVmBVjl_-fVk6MUn47GS9v6LfOiPt8ROuB3aNAjbOEKTFkiKrKBTODsZzBaSg8Uw4GBER4ArIDsX27sAzYfeSNVUbYFsZqEwNto_RaylesokEI_7D_nptPgGOwNV3n0SJ6Mng_MR_lMY74EuT6N1WOin8pq_BU3ZkZxqLt5nJyAtL57D1fNKyqb6Pa&gha_rd_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=false&alwd_risk=false&alwd_rand=false&gt=1775419637&sg=_UCMK&ttl_bkt=none&all_inclusive=false&utm_source=gha_rd&utm_content=localuniversal&currency=USD&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=1712.35&checkin_at=2026-04-14&checkout_at=2026-04-18&provider_hotel_id=10004027382&provider=ean&num_adults=2&children=[]&hotel_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic_rd&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Preferred Hotels & Resorts",
+      "totalPrice": 1855,
+      "savings": 191,
+      "url": "https://linkcenterus.derbysoftca.com/dplatform-linkcenter/booking.htm?hotelCode=PREFERRED-39380&providerHotelCode=PREFERRED-39380&checkInDate=2026-04-14&checkOutDate=2026-04-18&identifier=preferred-google&price=1855.00&roomTypeCode=CLAS&ratePlanCode=LONGRO&currency=EUR&userCurrency=EUR&language=fr&userCountry=FR&sitetype=localuniversal&deviceType=desktop&priceDisplayedTax=296.80&priceDisplayedTotal=1855.00&partnerId=preferredhotels&campaignid=&userlistid=&ifDefaultDate=selected&isPromoted=false&s_is_ad=false&adults=2&children=0&clk_src=&is_ds_account=true&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

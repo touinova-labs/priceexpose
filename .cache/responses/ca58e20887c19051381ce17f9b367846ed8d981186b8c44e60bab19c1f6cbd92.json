@@ -1,0 +1,31 @@
+{
+  "name": "ibis Paris Nation Davout",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 354,
+  "bestSavings": 33,
+  "bestSavingsPercent": 9,
+  "deals": [
+    {
+      "source": "Hotels.com",
+      "totalPrice": 321,
+      "savings": 33,
+      "url": "https://fr.hotels.com/Hotel-Search?selected=53580&startDate=2026-05-12&endDate=2026-05-15&mdpcid=HCOM-FR.META.HPA.HOTEL-ORGANIC-desktop.HOTEL&MDPDTL=HTL.53580.20260512.20260515.DDF.39.CID..AUDID.&adults=2&children=&mctc=10&mpf=321.46&mpg=EUR&mpl=EUR&mpj=59.38&mpr=0.00&rffrid=sem.hcom.FR.156.024.localuniversal.02.desktop-3.kwrd=GGMETA.53580FRfr-20260512-N-ABW=39-camp=-aud=-N&rateplanid=397079866&mpm=24&mpn=321906935&mpo=EC&mpp=1&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Expedia.fr",
+      "totalPrice": 321,
+      "savings": 33,
+      "url": "https://www.expedia.fr/Hotel-Search?selected=53580&startDate=2026-05-12&endDate=2026-05-15&MDPCID=FR.META.HPA.HOTEL-ORGANIC-desktop.HOTEL&MDPDTL=HTL.53580.20260512.20260515.DDF.39.CID..AUDID..RRID.bex_fr_desktop&adults=2&children=&mctc=10&ct=hotel&mpg=EUR&mpf=321.46&mpj=59.38&mpr=0.00&mpl=EUR&exp_pg=google&langid=fr&ad=2&tp=&utm_source=google&utm_medium=cpc&utm_term=53580&utm_content=localuniversal&utm_campaign=HotelAds&rateplanid=397079866&mpm=24&mpn=321906935&mpo=EC&mpp=1&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Amimir.com",
+      "totalPrice": 321,
+      "savings": 33,
+      "url": "https://www.amimir.com/fr/book/?start=12/05/2026&end=15/05/2026&hotelId=80294&highlightHotel=true&hab1=2&ehab1=&metasearch&utm_content=80294&checkV=false&totalPrice=321.46&userCountry=FR&utm_source=googleMetasearch&utm_medium=organic&currency=EUR&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

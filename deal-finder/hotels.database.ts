@@ -11,7 +11,7 @@ import { UnresolvedHotelRequest } from "./types";
 export interface HotelDBEntry {
     id: string;
     name: string;
-    location: {
+    location?: {
         address: string;
         postal_code: string;
         city: string;
@@ -77,11 +77,7 @@ export async function findHotelByPlatformId(platform: string, platformId: string
  * =========================
  */
 
-export async function findHotelByName(
-    hotelName: string,
-    destination: string,
-    address?: string
-): Promise<HotelDBEntry[]> {
+export async function findHotelByName(hotelName: string, destination: string, address?: string): Promise<HotelDBEntry[]> {
 
     let db = await loadHotelsDatabase();
 
@@ -93,7 +89,6 @@ export async function findHotelByName(
 
     const potentialMatches: { hotel: HotelDBEntry; score: number }[] = [];
     const THRESHOLD = 0.65;
-    db = db.filter(h => h.name === "Hôtel Monge"); // Filter out entries with missing location data
     for (const hotel of db) {
 
         const target = {
@@ -205,6 +200,33 @@ export async function updateHotelInDatabase(hotelEntry: HotelDBEntry, platform: 
     return { success: true };
 }
 
+export async function upsertHotelInDB(updates: Partial<HotelDBEntry>): Promise<{ success: boolean; error?: string }> {
+
+    const db = await loadHotelsDatabase();
+
+    let hotel = db.find((h) => h.id === updates.id
+        || (
+            updates.platformIds && h.platformIds &&
+            Object.entries(updates.platformIds).some(([platform, id]) => h.platformIds[platform] === id)
+        )
+    );
+
+    if (!hotel) {
+        // 🔄 UPSERT: Create new entry if not found
+        console.log(`➕ Creating new hotel entry: ${updates.id}`);
+        db.push(updates as HotelDBEntry);
+    } else {
+        // 🔄 UPDATE: Apply updates to existing entry
+        Object.assign(hotel, updates);
+    }
+
+    // 💾 Save
+    await saveDB(db);
+    hotelsDBCache = db;
+
+    return { success: true };
+}
+
 /**
  * =========================
  * UNRESOLVED
@@ -234,6 +256,9 @@ export async function saveUnresolvedRequest(hotelName: string, address: string, 
 
     if (existing) {
         existing.attempted++;
+        if (existing.address !== address && existing.address.length < address.length) {
+            existing.address = address;
+        }
         existing.timestamp = new Date().toISOString();
     } else {
         list.push({

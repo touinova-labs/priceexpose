@@ -10,7 +10,17 @@ export type { HotelDBEntry } from "./hotels.database";
  * MAIN RESOLVER
  * =========================
  */
-export async function resolveHotel(request: NormalizedBookRequest): Promise<GoogleHotelMatch | DealFinderError> {
+
+interface ResolveRequest {
+	address: string;
+	destination: string;
+	origin: {
+		name: string;
+		hotel_id: string;
+	};
+	hotelName: any;
+}
+export async function resolveHotel(request: ResolveRequest): Promise<GoogleHotelMatch | DealFinderError> {
 	try {
 		logSearchStart(request);
 
@@ -39,7 +49,7 @@ export async function resolveHotel(request: NormalizedBookRequest): Promise<Goog
  * STEP 1: PLATFORM MATCH
  * =========================
  */
-async function tryPlatformMatch(request: NormalizedBookRequest): Promise<GoogleHotelMatch | DealFinderError | null> {
+async function tryPlatformMatch(request: ResolveRequest): Promise<GoogleHotelMatch | DealFinderError | null> {
 	const match = await findHotelByPlatformId(request.origin.name, request.origin.hotel_id);
 
 	if (!match.found || !match.hotel) return null;
@@ -61,7 +71,7 @@ async function tryPlatformMatch(request: NormalizedBookRequest): Promise<GoogleH
  * STEP 2: NAME MATCH
  * =========================
  */
-async function tryNameMatch(request: NormalizedBookRequest) {
+async function tryNameMatch(request: ResolveRequest) {
 	console.log("🔍 Recherche fuzzy...");
 
 	const candidates = await findHotelByName(request.hotelName, request.destination, request.address);
@@ -87,8 +97,8 @@ Candidates:
 ${topCandidates.map((h, i) => `
 Index : ${i + 1}.
 Name: "${h.name}"
-Address: "${h.location.address}"
-City: "${h.location.city}"
+Address: "${h.location!.address}"
+City: "${h.location!.city}"
 `).join("\n")}
 
 Rules:
@@ -150,7 +160,7 @@ Return JSON only:
 
 	console.log(`🤖 AI Match: ${matchedHotel.name} (confidence: ${result.confidence})`);
 
-	await updateHotelInDatabase(matchedHotel, request.origin.name, request.origin.hotel_id); 
+	await updateHotelInDatabase(matchedHotel, request.origin.name, request.origin.hotel_id);
 	return buildSuccess(googleId);
 }
 
@@ -159,7 +169,7 @@ Return JSON only:
  * STEP 3: NOT FOUND
  * =========================
  */
-async function handleNotFound(request: NormalizedBookRequest): Promise<DealFinderError> {
+async function handleNotFound(request: ResolveRequest): Promise<DealFinderError> {
 
 	await saveUnresolvedRequest(
 		request.hotelName,
@@ -197,6 +207,6 @@ function buildError(
 	return { code, message, details };
 }
 
-function logSearchStart(request: NormalizedBookRequest) {
+function logSearchStart(request: ResolveRequest) {
 	console.log(`🔍 Recherche: "${request.hotelName}" (${request.origin.name}/${request.origin.hotel_id})`);
 }

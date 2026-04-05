@@ -1,0 +1,31 @@
+{
+  "name": "Korner Saint Marcel",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 542,
+  "bestSavings": 28,
+  "bestSavingsPercent": 5,
+  "deals": [
+    {
+      "source": "Hotel Saint Marcel - Paris  Site officiel",
+      "totalPrice": 514,
+      "savings": 28,
+      "url": "https://reservation.mirai.com/Forwarder/googleFrontDispatcher.htm?idtokenprovider=100380357&checkin=12/05/2026&nights=3&lang=fr&hsri=02040&adults=2&children=0&ages=&babies=0&googlecrawler=false&utm_source=hotelfinder&utm_medium=organic&utm_campaign=organic&currency=EUR&rates=NjYwNDF8ODMyNTF8NDQ2MjY0YjB8NTEzNzk&googlesite=localuniversal&tracking=&utm_content=FR&UserDevice=desktop&clickorigin=NOT-RBM&date_type=selected&campaign_id=organic&PPA1=FALSE&user_list_id=&clk_src=&prid=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Reservation Day",
+      "totalPrice": 540,
+      "savings": 2,
+      "url": "https://www.reservationday.com/transition/?data=price=503.47&total_price=584.38&retail_price=595.33&retail_total_price=690.99&surcharge=38.19&request_id=d3a3885c-d64a-4a14-8104-b7e91ff4d4d8&ps=11530094286364&pp=5P7SaqNvTArtxqCFNE3drw&pb=4Hg1wzYyeUVoG66G5ZxzJxSnxUuFTERsW6e_OF25R4WCPBpk8YftZbg6D6t9fX4j4Omyq514gl_Zlg1Qq2IAeehqRF7wFt545iqJsGxLSfrpylucXZzWqnWlMBincor3f2cwste-4rldr3EH6q4vMjdmPealcHmGctL3aTYGbM5DA2Q17jD7TcdJGlGCgXBX9qWzBN2Om7QfA-95_wOeebS8uhoOlTFTvJlIu18rKQ8jevco9fkuMpNp2lWHDbJkxeC-quZz9OSckYV60QSV3x2q9QmBDtvPvgaKS_li5WcQq3q1e6jbhH6S5HmPUxTn&gha_rd_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=false&alwd_risk=false&alwd_rand=false&gt=1775246276&sg=BFv75&ttl_bkt=none&all_inclusive=false&utm_source=gha_rd&utm_content=localuniversal&currency=USD&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=540.44&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10006149039&provider=ean&num_adults=2&children=[]&hotel_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic_rd&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Qantas Hotels",
+      "totalPrice": 557,
+      "savings": -15,
+      "url": "https://www.qantas.com/hotels/properties/190097?adults=2&children=0&infants=0&checkIn=2026-05-12&checkOut=2026-05-15&utm_campaign=GoogleHotels&adType=0&utm_medium=organic-search&utm_source=Google-Hotels&utm_term=190097&hotelID=190097&hotel_campaign=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

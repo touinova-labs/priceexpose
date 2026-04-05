@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { GoogleHotelMatch, isError, normalizeBookRequest, NormalizedBookRequest, RawBookRequest, resolveHotel } from '../../../../deal-finder';
 import { HotelScraperClient } from '../../../../scraper';
 import { normalize_BookingOffers } from '../../../../deal-finder/normalizeBookingOffers';
+import { exploreUnResolved } from '../../../../data/pipeline';
+import { generateCacheKey, getCachedResponse, saveCachedResponse } from '../../../lib/cache';
 
 // Initialize HotelScraperClient
 const scraperClient = new HotelScraperClient({
@@ -9,59 +11,38 @@ const scraperClient = new HotelScraperClient({
     timeout: 60000
 });
 
-export async function GET1() {
+export async function GET() {
     try {
-        // Example: Get booking offers for a hotel
-        const googleId = "ChgIqav798XohJB3GgwvZy8xMXI5cXF6eGQQAQ"; // Hotel Monge
-        const offers = await scraperClient.getBookingOffers(
-            googleId,
-            '2026-04-13',
-            '2026-04-16',
-            { currency: 'EUR', guests: 2, children: 0 }
-        );
-
-        if (!offers || offers.length === 0) {
-            return NextResponse.json({ success: false, error: "No offers found" }, { status: 404 });
-        }
-
-        return NextResponse.json({ success: true, offers });
+        await exploreUnResolved();
+        return NextResponse.json({ success: true });
     } catch (error) {
         console.error('GET error:', error);
         return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }
 
-// export async function POST2(request: Request) {
-//     const data = await request.json();
-//     return NextResponse.json({
-//         name: data.hotelName,
-//         hasDeal: true,
-//         currency: "EUR",
-//         totalBooking: 50,
-//         type: "BACKEND_RESPONSE",
-//         deals: [
-//             {
-//                 source: "SITE 1",
-//                 totalPrice: 12,
-//                 url: "https://opdp.com",
-//                 isOfficial: false,
-//             },
-//             {
-//                 source: "SITE 2",
-//                 totalPrice: 34,
-//                 url: "https://opdp.com",
-//                 isOfficial: false,
-//             },
-//         ]
-//     });
-// }
-
-
 export async function POST(request: Request) {
 
     try {
 
         var sourceRequest: RawBookRequest = await request.json();
+        sourceRequest.origin.hotel_id = sourceRequest.origin.hotel_id.replace(".fr.", "."); // Normalisation temporaire des IDs Booking.fr -> Booking.com
+
+        // 🔑 Generate cache key from request properties
+        const cacheKey = generateCacheKey({
+            hotelName: sourceRequest.hotelName,
+            address: sourceRequest.address,
+            checkIn: sourceRequest.checkIn,
+            checkOut: sourceRequest.checkOut,
+            travelers: sourceRequest.travelers
+        });
+
+        // 💾 Check if response is cached
+        const cachedResponse = await getCachedResponse(cacheKey);
+        if (cachedResponse) {
+            console.log("Returning cached response");
+            return NextResponse.json(cachedResponse);
+        }
 
         const normalizedOrError = await normalizeBookRequest(sourceRequest);
         if (isError(normalizedOrError)) {
@@ -125,7 +106,7 @@ export async function POST(request: Request) {
             .sort((a, b) => a.totalPrice - b.totalPrice)
             ;
 
-        console.log("Valid Deals:", validDeals, totalBooking);
+        console.log("Valid Deals:", validDeals.length);
         const top3Deals = validDeals
             .slice(0, 3); // On prend les 3 premiers après le tri par prix
 
@@ -135,7 +116,7 @@ export async function POST(request: Request) {
             const savings = totalBooking - best.totalPrice;
             const savingsPercent = (savings / totalBooking) * 100;
 
-            if (savingsPercent >= 3 && savingsPercent <= 30) {
+            if (savingsPercent >= 2 && savingsPercent <= 40) {
 
                 // 3. On formate les 3 deals proprement
                 const formattedDeals = top3Deals.map(deal => {
@@ -158,7 +139,7 @@ export async function POST(request: Request) {
                     };
                 });
 
-                return NextResponse.json({
+                const dealResponse = {
                     name: sourceRequest.hotelName,
                     hasDeal: true,
                     currency: normalized.leadOffer.currency,
@@ -166,11 +147,21 @@ export async function POST(request: Request) {
                     bestSavings: Math.round(savings),
                     bestSavingsPercent: Math.round(savingsPercent),
                     deals: formattedDeals // On renvoie le tableau complet
-                });
+                };
+
+                // 💾 Cache the successful response
+                await saveCachedResponse(cacheKey, dealResponse);
+
+                return NextResponse.json(dealResponse);
             }
         }
 
-        return NextResponse.json({ hasDeal: false });
+        const noDealResponse = { hasDeal: false };
+        
+        // 💾 Cache the "no deal" response
+        await saveCachedResponse(cacheKey, noDealResponse);
+
+        return NextResponse.json(noDealResponse);
 
 
     } catch (error) {

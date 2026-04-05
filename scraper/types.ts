@@ -9,20 +9,28 @@ export interface Hotel {
   googleId: string;
 }
 
-export interface DiscoverResult {
-  hotels: Hotel[];
-  count: number;
+export type DiscoverResult = {
+  data: Hotel[] | {
+    hotel_name: string;
+    street_address: string;
+    postal_code: string;
+    city: string;
+    country: string;
+    telephone_number: string;
+    popup: true;
+    googleId: string
+  };
 }
 
 // ============ Enrich API Types ============
 
 export interface HotelDetails {
-  hotelName: string;
-  address: string;
-  postalCode: string;
+  hotel_name: string;
+  street_address: string;
+  postal_code: string;
   city: string;
   country: string;
-  phoneNumber: string;
+  telephone_number: string;
 }
 
 // ============ Booking Offers API Types ============

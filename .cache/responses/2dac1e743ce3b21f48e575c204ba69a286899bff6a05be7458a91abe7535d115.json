@@ -1,0 +1,31 @@
+{
+  "name": "Hotel Little Regina",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 422,
+  "bestSavings": 49,
+  "bestSavingsPercent": 12,
+  "deals": [
+    {
+      "source": "Agoda",
+      "totalPrice": 373,
+      "savings": 49,
+      "url": "https://www.agoda.com/fr-fr/partners/partnersearch.aspx?site_id=1917614&CkInDay=12&CkInMonth=05&CkInYear=2026&CkOutDay=15&campaignid=&CkOutMonth=05&CkOutYear=2026&SearchDateType=selected&NumberOfAdults=2&LT=39&NumberOfChildren=0&childages=&NumberOfRooms=1&gsite=localuniversal&los=3&PartnerCurrency=EUR&hid=114214&RoomID=4923980&masterRoomId=3605021&PriceTax=33.91&PriceTotal=373.01&RatePlan=&UserCountry=FR&Currency=EUR&UserDevice=desktop&Verif=false&rr=EEA_pull&audience_list=&mcid=28282&booking_source=cpc&adType=0&mpt=cWJueFJxWmZvVkpaUlBVMDNyMjUwd3VEK1o5V00wVHVoQUx4YmlYRjFLNzRIUjNxRTBHU29hRnA0Ylo3Y0ZXQThIbmtOanpKTUtwdw&original_rr=EEA_pull&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "upps",
+      "totalPrice": 399,
+      "savings": 23,
+      "url": "https://www.upps.at/main/book_rooms.php?hotelID=22-6613&checkinDay=12&checkinMonth=05&checkinYear=2026&nights=3&language=fr&adult=2&child=0&room=22-6613-348&source=localuniversal&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Super.com",
+      "totalPrice": 401,
+      "savings": 21,
+      "url": "https://www.super.com/travel/transition/?data=price=346.95&total_price=381.64&surcharge=19.56&request_id=75b3c877-a9cd-4502-a985-d7e6fe236a89&ps=296306&pp=hhpTW0G5esYR-3FEjUqcEg&pb=P_x7el3_WshBkisW8-fXcK_g8duMDe-RYWXP-K6-KR4ntYwA8cKOadY0TgyIYakJ1NDY2hiS_vmWRQrAuK1d-aGueyAaCVBxf8zpyczGyi1F9eOX7XmnWaKsbdNSkqdRwoQlWoNjPi79dR49d4bdXLNRyhBqXmztneTKvU0Fx_1fQ1as79qlYE2O1UFhPwOywKDGDAfiak26xe_B5a0EI28LG8ceRbjc8f7MRinTujRANDX6d0Q8RBXQvwb1bocEDcKnE4qGWxnaR-aK6wQEcvK1ODdEsh0SgVwEkkkx2pS6kXiMNC5EU6vzOffbxmTwetK33xi3-tz4Dbp182IceQzwT5pQiIU9LZMw5u4Kr-4b1HObMyJMQ9snFF1Txnah&gha_pull_request=True&rtp=SdTUqdR7wIew8aRS9esAtw%3D%3D&risk_lk_1=true&alwd_risk=false&alwd_rand=false&gt=1775243336&sg=ow0ZG&sid=GHA_MD7&cmab_id=15&ttl_bkt=none&all_inclusive=false&utm_source=gha&utm_content=localuniversal&currency=EUR&user_country=FR&verification=false&rate_rule_ids=&date_type=selected&rate_rule_id=signedout_desktop&display_currency=EUR&display_all_inclusive_price=401.19&checkin_at=2026-05-12&checkout_at=2026-05-15&provider_hotel_id=10004481050&provider=ean&num_adults=2&children=[]&hotel_campaign=&utm_campaign=&user_locale=fr-FR&user_list_id=&utm_medium=organic&utm_id=gha_organic&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}
