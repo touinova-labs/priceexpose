@@ -1,20 +1,3 @@
 [
-  {
-    "hotelName": "ibis Paris Alesia Montparnasse",
-    "address": "14th arr., Paris",
-    "destination": "Paris",
-    "sourcePlatform": "BOOKING",
-    "sourcePlatformId": "ibis-paris-alesia-montparnasse.html",
-    "timestamp": "2026-04-03T22:21:45.278Z",
-    "attempted": 1
-  },
-  {
-    "hotelName": "Hipotel Belgrand Edith Piaf",
-    "address": "20th arr., Paris",
-    "destination": "Paris",
-    "sourcePlatform": "BOOKING",
-    "sourcePlatformId": "hotelbelgrand.html",
-    "timestamp": "2026-04-05T20:55:22.159Z",
-    "attempted": 1
-  }
+  
 ]
