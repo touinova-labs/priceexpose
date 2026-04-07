@@ -86,32 +86,31 @@ export async function findHotelByPlatformId(platform: string, platformId: string
  */
 
 
-export async function findHotelByName(hotelName: string,destination: string,address?: string): Promise<HotelDBEntry[]> {
+export async function findHotelByName(hotelName: string, destination: string, address?: string): Promise<HotelDBEntry[]> {
 
     const name = hotelName.toLowerCase();
     const city = destination.toLowerCase();
     const addr = address?.toLowerCase() || "";
 
     const result = await pool.query(`
+    WITH scored AS (
         SELECT *,
             similarity(name, $1) AS name_score,
             similarity(location->>'city', $2) AS city_score,
-            similarity(location->>'address', $3) AS address_score
+            similarity(location->>'address', $3) AS address_score,
+            (
+                similarity(name, $1) * 0.6 +
+                similarity(location->>'city', $2) * 0.3 +
+                similarity(location->>'address', $3) * 0.1
+            ) AS score
         FROM hotels
-        WHERE
-            similarity(name, $1) > 0.2
-            OR similarity(location->>'city', $2) > 0.2
-        ORDER BY
-            (similarity(name, $1) * 0.6 +
-             similarity(location->>'city', $2) * 0.3 +
-             similarity(location->>'address', $3) * 0.1) DESC
-        HAVING (
-            similarity(name, $1) * 0.6 +
-            similarity(location->>'city', $2) * 0.3 +
-            similarity(location->>'address', $3) * 0.1
-        ) > 0.65
-        LIMIT 20
-    `, [name, city, addr]);
+    )
+    SELECT *
+    FROM scored
+    WHERE score > 0.65
+    ORDER BY score DESC
+    LIMIT 20
+`, [name, city, addr]);
 
     return result.rows.map(hotel => ({
         id: hotel.id,
