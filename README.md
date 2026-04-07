@@ -46,3 +46,14 @@ docker run -d \
   postgres:16
 
   psql -h 82.165.116.199 -U hotels_user -d hotels_db
+
+
+  Enriching hotel data for property: ChkIg7Wsid-9hfJ0Gg0vZy8xMXM1ajV4NmdzEAE
+0|extension-scraper  | 🚀 Navigation vers : https://www.google.fr/travel/hotels/entity/ChkIg7Wsid-9hfJ0Gg0vZy8xMXM1ajV4NmdzEAE/overview
+0|extension-scraper  | 🔍 Extraction des données...
+0|extension-scraper  | Texte brut extrait: The Lemonary Marrakech
+0|extension-scraper  | Hôtel 4 étoiles
+0|extension-scraper  | km15 route de sidi rahal, Centre Commune Ouled Hassoune 40000, Maroc•+212 6 61 34 36 55
+0|extension-scraper  | 116 €
+0|extension-scraper  | 9–10 mai
+

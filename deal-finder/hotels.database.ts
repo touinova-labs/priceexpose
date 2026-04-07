@@ -93,23 +93,24 @@ export async function findHotelByName(hotelName: string, destination: string, ad
     const addr = address?.toLowerCase() || "";
 
     const result = await pool.query(`
-    WITH scored AS (
-        SELECT *,
-            similarity(name, $1) AS name_score,
-            similarity(location->>'city', $2) AS city_score,
-            similarity(location->>'address', $3) AS address_score,
-            (
-                similarity(name, $1) * 0.6 +
-                similarity(location->>'city', $2) * 0.3 +
-                similarity(location->>'address', $3) * 0.1
-            ) AS score
-        FROM hotels
-    )
-    SELECT *
-    FROM scored
-    WHERE score > 0.65
-    ORDER BY score DESC
-    LIMIT 20
+    SELECT *,
+    -- Use COALESCE to avoid NULL
+    COALESCE(similarity(name, $1), 0) AS name_score,
+    COALESCE(similarity(location->>'city', $2), 0) AS city_score,
+    COALESCE(similarity(location->>'address', $3), 0) AS address_score,
+    -- Combined score
+    (
+        COALESCE(similarity(name, $1), 0) * 0.6 +
+        COALESCE(similarity(location->>'city', $2), 0) * 0.3 +
+        COALESCE(similarity(location->>'address', $3), 0) * 0.1
+    ) AS score
+FROM hotels
+-- Only keep rows with some minimal similarity
+WHERE
+    COALESCE(similarity(name, $1), 0) > 0.2
+    OR COALESCE(similarity(location->>'city', $2), 0) > 0.2
+ORDER BY score DESC
+LIMIT 20;
 `, [name, city, addr]);
 
     return result.rows.map(hotel => ({
