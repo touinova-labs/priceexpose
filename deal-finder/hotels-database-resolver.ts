@@ -97,8 +97,8 @@ Candidates:
 ${topCandidates.map((h, i) => `
 Index : ${i + 1}.
 Name: "${h.name}"
-Address: "${h.location!.address}"
-City: "${h.location!.city}"
+Address: "${h.location?.address || "N/A"}"
+City: "${h.location?.city || "N/A"}"
 `).join("\n")}
 
 Rules:
