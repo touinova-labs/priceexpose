@@ -1,6 +1,5 @@
-import * as fs from "fs/promises";
-import * as path from "path";
 import { UnresolvedHotelRequest } from "./types";
+import { pool } from "./db";
 
 /**
  * =========================
@@ -39,20 +38,15 @@ export interface HotelDatabaseMatch {
  * =========================
  */
 
-let hotelsDBCache: HotelDBEntry[] | null = null;
-
 export async function loadHotelsDatabase(): Promise<HotelDBEntry[]> {
-    if (hotelsDBCache) return hotelsDBCache;
-
-    try {
-        const dbPath = path.join(process.cwd(), "hotels_db.json");
-        const data = await fs.readFile(dbPath, "utf-8");
-        hotelsDBCache = JSON.parse(data);
-        console.log(`📚 BD chargée: ${hotelsDBCache!.length}`);
-        return hotelsDBCache!;
-    } catch {
-        return [];
-    }
+    const result = await pool.query("SELECT * FROM hotels");
+    return result.rows.map(row => ({
+        ...row,
+        location: row.location,
+        platformIds: row.platform_ids,
+        resolvedAt: row.resolved_at,
+        resolvedBy: row.resolved_by,
+    }));
 }
 
 /**
@@ -61,14 +55,28 @@ export async function loadHotelsDatabase(): Promise<HotelDBEntry[]> {
  * =========================
  */
 
-export async function findHotelByPlatformId(platform: string, platformId: string): Promise<HotelDatabaseMatch> {
-    const db = await loadHotelsDatabase();
+export async function findHotelByPlatformId(platform: string, platformId: string) {
+    const query = `
+        SELECT * FROM hotels
+        WHERE platform_ids->>$1 = $2
+    `;
 
-    const hotel = db.find((h) => h.platformIds && h.platformIds[platform] === platformId);
+    const result = await pool.query(query, [platform, platformId]);
 
-    if (!hotel) return { found: false };
+    if (result.rows.length === 0) return { found: false };
 
-    return { found: true, hotel, platform, platformId };
+    const hotel = result.rows[0];
+
+    return {
+        found: true,
+        hotel: {
+            ...hotel,
+            location: hotel.location,
+            platformIds: hotel.platform_ids,
+            resolvedAt: hotel.resolved_at,
+            resolvedBy: hotel.resolved_by,
+        }
+    };
 }
 
 /**
@@ -77,55 +85,43 @@ export async function findHotelByPlatformId(platform: string, platformId: string
  * =========================
  */
 
-export async function findHotelByName(hotelName: string, destination: string, address?: string): Promise<HotelDBEntry[]> {
 
-    let db = await loadHotelsDatabase();
+export async function findHotelByName(hotelName: string,destination: string,address?: string): Promise<HotelDBEntry[]> {
 
-    const input = {
-        name: normalize(hotelName),
-        city: normalize(destination),
-        address: normalize(address || "")
-    };
+    const name = hotelName.toLowerCase();
+    const city = destination.toLowerCase();
+    const addr = address?.toLowerCase() || "";
 
-    const potentialMatches: { hotel: HotelDBEntry; score: number }[] = [];
-    const THRESHOLD = 0.65;
-    for (const hotel of db) {
+    const result = await pool.query(`
+        SELECT *,
+            similarity(name, $1) AS name_score,
+            similarity(location->>'city', $2) AS city_score,
+            similarity(location->>'address', $3) AS address_score
+        FROM hotels
+        WHERE
+            similarity(name, $1) > 0.2
+            OR similarity(location->>'city', $2) > 0.2
+        ORDER BY
+            (similarity(name, $1) * 0.6 +
+             similarity(location->>'city', $2) * 0.3 +
+             similarity(location->>'address', $3) * 0.1) DESC
+        HAVING (
+            similarity(name, $1) * 0.6 +
+            similarity(location->>'city', $2) * 0.3 +
+            similarity(location->>'address', $3) * 0.1
+        ) > 0.65
+        LIMIT 20
+    `, [name, city, addr]);
 
-        const target = {
-            name: normalize(hotel.name),
-            city: normalize(hotel.location?.city),
-            address: normalize(hotel.location?.address)
-        };
-
-        // 🔹 Scores
-        const nameScore = similarity(input.name, target.name);
-        const cityScore = similarity(input.city, target.city);
-        const addressScore = address
-            ? similarity(input.address, target.address)
-            : 0;
-
-        // 🔥 Score global
-        let score =
-            nameScore * 0.6 +
-            cityScore * 0.3 +
-            addressScore * 0.1;
-
-        // 🔥 Boosts
-        if (input.city === target.city) score += 0.05;
-        if (nameScore > 0.9) score += 0.1;
-
-        // ❌ Pénalités
-        if (cityScore < 0.3) score -= 0.25;
-        if (nameScore < 0.3) score -= 0.2;
-
-        score = clamp(score);
-
-        if (score >= THRESHOLD) {
-            potentialMatches.push({ hotel, score });
-        }
-    }
-    potentialMatches.sort((a, b) => b.score - a.score);
-    return potentialMatches.map((m) => m.hotel)
+    return result.rows.map(hotel => ({
+        id: hotel.id,
+        name: hotel.name,
+        location: hotel.location,
+        telephone_number: hotel.telephone_number,
+        platformIds: hotel.platform_ids,
+        resolvedAt: hotel.resolved_at,
+        resolvedBy: hotel.resolved_by,
+    }));
 }
 
 /**
@@ -134,97 +130,86 @@ export async function findHotelByName(hotelName: string, destination: string, ad
  * =========================
  */
 
-export async function addHotelToDatabase(hotelEntry: Omit<HotelDBEntry, "resolvedAt" | "resolvedBy">): Promise<{ success: boolean; error?: string }> {
+export async function addHotelToDatabase(hotelEntry: Omit<HotelDBEntry, "resolvedAt" | "resolvedBy">) {
 
-    const db = await loadHotelsDatabase();
+    const query = `
+        INSERT INTO hotels (id, name, location, telephone_number, platform_ids, resolved_at, resolved_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
 
-    for (const platform in hotelEntry.platformIds) {
-        const exists = db.some(
-            (h) => h.platformIds[platform] === hotelEntry.platformIds[platform]
-        );
-        if (exists) {
-            return { success: false, error: "Duplicate platformId" };
-        }
-    }
-
-    const newEntry: HotelDBEntry = {
-        ...hotelEntry,
-        resolvedAt: new Date().toISOString(),
-        resolvedBy: "DATABASE_IMPORT",
-    };
-
-    db.push(newEntry);
-    hotelsDBCache = db;
-
-    await saveDB(db);
+    await pool.query(query, [
+        hotelEntry.id,
+        hotelEntry.name,
+        JSON.stringify(hotelEntry.location || null),
+        hotelEntry.telephone_number || null,
+        JSON.stringify(hotelEntry.platformIds),
+        new Date(),
+        "DATABASE_IMPORT"
+    ]);
 
     return { success: true };
 }
-export async function updateHotelInDatabase(hotelEntry: HotelDBEntry, platform: string, platformId: string): Promise<{ success: boolean; error?: string }> {
 
-    const db = await loadHotelsDatabase();
 
-    const hotel = db.find((h) => h.id === hotelEntry.id);
+export async function updateHotelInDatabase(hotelEntry: HotelDBEntry, platform: string, platformId: string) {
+    const query = `
+        UPDATE hotels
+        SET platform_ids = jsonb_set(platform_ids, $1, $2::jsonb),
+            resolved_at = $3,
+            resolved_by = 'AI_MATCH'
+        WHERE id = $4
+    `;
 
-    if (!hotel) {
-        console.error(`❌ Hotel not found in DB for update: ${hotelEntry.id}`);
-        return {
-            success: false,
-            error: "Hotel not found in database",
-        };
-    }
-
-    // 🔒 2. Vérifier si ce platformId existe déjà ailleurs
-    const duplicate = hotel.platformIds[platform] && hotel.platformIds[platform] !== platformId
-    if (duplicate) {
-        console.error(`❌ Duplicate platformId detected for ${platform}: ${platformId}`);
-        return {
-            success: false,
-            error: `Duplicate ${platform} platformId`,
-        };
-    }
-
-    // 🔄 3. Update platformId
-    hotel.platformIds[platform] = platformId;
-
-    // 🕒 4. Update metadata
-    hotel.resolvedAt = new Date().toISOString();
-    hotel.resolvedBy = "AI_MATCH";
-
-    // 💾 5. Save
-    await saveDB(db);
-    hotelsDBCache = db;
-
-    console.log(`✅ Updated ${hotel.name} with ${platform} ID`);
+    await pool.query(query, [
+        `{${platform}}`,
+        JSON.stringify(platformId),
+        new Date(),
+        hotelEntry.id
+    ]);
 
     return { success: true };
 }
+
 
 export async function upsertHotelInDB(updates: Partial<HotelDBEntry>): Promise<{ success: boolean; error?: string }> {
 
-    const db = await loadHotelsDatabase();
+    try {
+        await pool.query(`
+            INSERT INTO hotels (
+                id,
+                name,
+                location,
+                telephone_number,
+                platform_ids,
+                resolved_at,
+                resolved_by
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
 
-    let hotel = db.find((h) => h.id === updates.id
-        || (
-            updates.platformIds && h.platformIds &&
-            Object.entries(updates.platformIds).some(([platform, id]) => h.platformIds[platform] === id)
-        )
-    );
+            ON CONFLICT (id)
+            DO UPDATE SET
+                name = COALESCE(EXCLUDED.name, hotels.name),
+                location = COALESCE(EXCLUDED.location, hotels.location),
+                telephone_number = COALESCE(EXCLUDED.telephone_number, hotels.telephone_number),
+                platform_ids = hotels.platform_ids || EXCLUDED.platform_ids,
+                resolved_at = EXCLUDED.resolved_at,
+                resolved_by = EXCLUDED.resolved_by
+        `, [
+            updates.id,
+            updates.name || null,
+            updates.location ? JSON.stringify(updates.location) : null,
+            updates.telephone_number || null,
+            updates.platformIds ? JSON.stringify(updates.platformIds) : null,
+            new Date(),
+            "UPSERT"
+        ]);
 
-    if (!hotel) {
-        // 🔄 UPSERT: Create new entry if not found
-        console.log(`➕ Creating new hotel entry: ${updates.id}`);
-        db.push(updates as HotelDBEntry);
-    } else {
-        // 🔄 UPDATE: Apply updates to existing entry
-        Object.assign(hotel, updates);
+        return { success: true };
+
+    } catch (err: any) {
+        console.error(err);
+        return { success: false, error: err.message };
     }
-
-    // 💾 Save
-    await saveDB(db);
-    hotelsDBCache = db;
-
-    return { success: true };
 }
 
 /**
@@ -234,107 +219,71 @@ export async function upsertHotelInDB(updates: Partial<HotelDBEntry>): Promise<{
  */
 
 export async function loadUnresolvedRequests(): Promise<UnresolvedHotelRequest[]> {
-    try {
-        const file = path.join(process.cwd(), "hotels_resolve.json");
-        const data = await fs.readFile(file, "utf-8");
-        return JSON.parse(data);
-    } catch {
-        return [];
-    }
+    const result = await pool.query(`
+        SELECT * FROM unresolved_hotels
+        ORDER BY timestamp DESC
+    `);
+
+    return result.rows.map(r => ({
+        hotelName: r.hotel_name,
+        address: r.address,
+        destination: r.destination,
+        sourcePlatform: r.source_platform,
+        sourcePlatformId: r.source_platform_id,
+        timestamp: r.timestamp,
+        attempted: r.attempted,
+    }));
 }
 
-export async function saveUnresolvedRequest(hotelName: string, address: string, destination: string, sourcePlatform: string, sourcePlatformId: string)
-    : Promise<void> {
+export async function saveUnresolvedRequest(
+    hotelName: string,
+    address: string,
+    destination: string,
+    sourcePlatform: string,
+    sourcePlatformId: string
+): Promise<void> {
 
-    const file = path.join(process.cwd(), "hotels_resolve.json");
-    const list = await loadUnresolvedRequests();
-
-    const key = `${sourcePlatform}|${sourcePlatformId}`;
-    const existing = list.find((i) =>
-        `${i.sourcePlatform}|${i.sourcePlatformId}` === key
-    );
-
-    if (existing) {
-        existing.attempted++;
-        if (existing.address !== address && existing.address.length < address.length) {
-            existing.address = address;
-        }
-        existing.timestamp = new Date().toISOString();
-    } else {
-        list.push({
-            hotelName,
+    await pool.query(`
+        INSERT INTO unresolved_hotels (
+            hotel_name,
             address,
             destination,
-            sourcePlatform,
-            sourcePlatformId,
-            timestamp: new Date().toISOString(),
-            attempted: 1,
-        });
-    }
+            source_platform,
+            source_platform_id,
+            timestamp,
+            attempted
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, 1)
 
-    await fs.writeFile(file, JSON.stringify(list, null, 2));
+        ON CONFLICT (source_platform, source_platform_id)
+        DO UPDATE SET
+            attempted = unresolved_hotels.attempted + 1,
+            address = CASE 
+                WHEN length(EXCLUDED.address) > length(unresolved_hotels.address)
+                THEN EXCLUDED.address
+                ELSE unresolved_hotels.address
+            END,
+            timestamp = EXCLUDED.timestamp
+    `, [
+        hotelName,
+        address,
+        destination,
+        sourcePlatform,
+        sourcePlatformId,
+        new Date()
+    ]);
 }
 
-export async function removeFromUnresolved(sourcePlatform: string, sourcePlatformId: string)
-    : Promise<{ success: boolean }> {
+export async function removeFromUnresolved(
+    sourcePlatform: string,
+    sourcePlatformId: string
+): Promise<{ success: boolean }> {
 
-    const file = path.join(process.cwd(), "hotels_resolve.json");
-    const list = await loadUnresolvedRequests();
+    const result = await pool.query(`
+        DELETE FROM unresolved_hotels
+        WHERE source_platform = $1
+        AND source_platform_id = $2
+    `, [sourcePlatform, sourcePlatformId]);
 
-    const filtered = list.filter(
-        (i) =>
-            !(i.sourcePlatform === sourcePlatform &&
-                i.sourcePlatformId === sourcePlatformId)
-    );
-
-    await fs.writeFile(file, JSON.stringify(filtered, null, 2));
-
-    return { success: filtered.length !== list.length };
-}
-
-/**
- * =========================
- * HELPERS
- * =========================
- */
-
-async function saveDB(db: HotelDBEntry[]) {
-    const dbPath = path.join(process.cwd(), "hotels_db.json");
-    await fs.writeFile(dbPath, JSON.stringify(db, null, 2));
-}
-
-const STOP_WORDS = [
-    "hotel", "hôtel", "residence", "appart", "apart", "inn", "lodge", "motel", "hostel",
-    "the", "a", "an", "and", "or", "of", "in", "on", "at", "to", "for", "with",
-];
-
-function normalize(str?: string): string {
-    if (!str) return "";
-    return str
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\n+/g, " ")
-        .split(" ")
-        .filter(w => w && !STOP_WORDS.includes(w))
-        .join(" ")
-        .trim();
-}
-
-function similarity(a: string, b: string): number {
-    if (!a || !b || a.trim() === "" || b.trim() === "") return 0;
-
-    const A = a.split(" ");
-    const B = b.split(" ");
-
-    let matches = 0;
-    for (const w of A) {
-        if (B.includes(w)) matches++;
-    }
-
-    return matches / Math.max(A.length, B.length);
-}
-
-function clamp(n: number): number {
-    return Math.max(0, Math.min(1, n));
+    return { success: true };
 }

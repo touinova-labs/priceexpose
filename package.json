@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@sparticuz/chromium-min": "^143.0.4",
+    "@types/pg": "^8.20.0",
     "lucide-react": "^1.0.1",
     "next": "16.2.1",
+    "pg": "^8.20.0",
     "playwright-extra": "^4.3.6",
     "proxy-chain": "^2.7.1",
     "puppeteer-core": "^24.40.0",

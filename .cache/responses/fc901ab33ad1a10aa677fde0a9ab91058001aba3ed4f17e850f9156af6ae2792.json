@@ -1,0 +1,31 @@
+{
+  "name": "lyf Gambetta Paris",
+  "hasDeal": true,
+  "currency": "EUR",
+  "totalBooking": 847,
+  "bestSavings": 98,
+  "bestSavingsPercent": 12,
+  "deals": [
+    {
+      "source": "Travelben",
+      "totalPrice": 749,
+      "savings": 98,
+      "url": "https://www.travelben.com/hotel/detail?hotelId=h1410875834599739392&roomId=r&planId=r_2p5d0c&checkInDate=2026-04-13&checkOutDate=2026-04-18&adultNum=2&childrenNum=0&childrenAges=&userDevice=desktop&googleSite=localuniversal&userCurrency=EUR&userCountry=FR&locale=fr&userTotal=748.95&userTax=135.55&campaignId=&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Expedia.fr",
+      "totalPrice": 889,
+      "savings": -42,
+      "url": "https://www.expedia.fr/Hotel-Search?selected=109114293&startDate=2026-04-13&endDate=2026-04-18&MDPCID=FR.META.HPA.HOTEL-ORGANIC-desktop.HOTEL&MDPDTL=HTL.109114293.20260413.20260418.DDF.6.CID..AUDID..RRID.bex_fr_desktop&adults=2&children=&mctc=10&ct=hotel&mpg=EUR&mpf=888.50&mpj=157.60&mpr=0.00&mpl=EUR&exp_pg=google&langid=fr&ad=2&tp=&utm_source=google&utm_medium=cpc&utm_term=109114293&utm_content=localuniversal&utm_campaign=HotelAds&rateplanid=398189548&mpm=24&mpn=325477721&mpo=EC&mpp=1&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    },
+    {
+      "source": "Vio.com",
+      "totalPrice": 905,
+      "savings": -58,
+      "url": "https://deals.vio.com/?sig=73aca13c7f952d2641c156f3e69125e1eb497c325f122828ee5aa8797168b9a12d32303331333438363233&turl=https://www.vio.com/Hotel/Search?checkIn=2026-04-13&checkOut=2026-04-18&currency=EUR&forceCurrencyChange=1&lang=fr&forceLanguageChange=1&rooms=2:&utm_source=gha&utm_medium=cpc&hotelId=122296527&userCountry=FR&profile=r2d2m73kn8&preferredRate=905.30&deviceType=desktop&label=src%3Dgha%26cltype%3Dhotel%26datype%3Dselected%26gsite%3Dlocaluniversal%26vf%3D0%26ucountry%3DFR%26udevice%3Ddesktop%26hotel%3D122296527%26day%3D13%26month%3D04%26year%3D2026%26los%3D5%26price%3D905.30%26currency%3DEUR%26cid%3D%26listid%3D%26rateid%3DZZ_D%26closerateid%3D%26promo%3D0%26isPrivateRate%3D0%26isAudienceUser%3D0%26isPaidClick%3D0%26&cp=MjTu56bidP4CgtfUlJIcm9SV2t2NBjeyNXOBiADON29iLMBQhgI7In72qfgxNGNARCsrgUgjoYBKgNVU0Q&utm_source=priceexpose&px_track=true",
+      "isOfficial": false
+    }
+  ]
+}

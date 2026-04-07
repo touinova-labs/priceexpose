@@ -1,9 +1,10 @@
-import * as fs from "fs/promises";
-import * as path from "path";
 import * as crypto from "crypto";
+import { pool } from "../../deal-finder/db";
 
 /**
- * Generate a hash key from request properties
+ * =========================
+ * Generate cache key
+ * =========================
  */
 export function generateCacheKey(properties: {
     hotelName: string;
@@ -17,82 +18,98 @@ export function generateCacheKey(properties: {
 }
 
 /**
- * Get cache directory path
+ * =========================
+ * Ensure cache table exists
+ * (run once at startup if needed)
+ * =========================
  */
-function getCachePath(): string {
-    return path.join(process.cwd(), ".cache", "responses");
+export async function initCacheTable() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS cache (
+            key TEXT PRIMARY KEY,
+            value JSONB,
+            created_at TIMESTAMP DEFAULT now()
+        );
+    `);
 }
 
 /**
- * Get full cache file path for a key
- */
-function getCacheFilePath(key: string): string {
-    return path.join(getCachePath(), `${key}.json`);
-}
-
-/**
- * Read cached response if it exists
+ * =========================
+ * Get cached response
+ * =========================
  */
 export async function getCachedResponse(key: string): Promise<any | null> {
     try {
-        const filePath = getCacheFilePath(key);
-        const data = await fs.readFile(filePath, "utf-8");
-        const cached = JSON.parse(data);
-        console.log(`✅ Cache hit for key: ${key.substring(0, 8)}...`);
-        return cached;
-    } catch {
+        const result = await pool.query(
+            `SELECT value FROM cache WHERE key = $1`,
+            [key]
+        );
+
+        if (result.rows.length === 0) return null;
+
+        console.log(`✅ Cache hit: ${key.substring(0, 8)}...`);
+        return result.rows[0].value;
+
+    } catch (error) {
+        console.error("❌ Cache read error:", error);
         return null;
     }
 }
 
 /**
- * Save response to cache
+ * =========================
+ * Save cached response
+ * =========================
  */
 export async function saveCachedResponse(key: string, response: any): Promise<void> {
     try {
-        const cacheDir = getCachePath();
-        
-        // 🔒 Create cache directory if it doesn't exist
-        try {
-            await fs.mkdir(cacheDir, { recursive: true });
-        } catch {
-            // Directory might already exist
-        }
+        await pool.query(`
+            INSERT INTO cache (key, value)
+            VALUES ($1, $2)
+            ON CONFLICT (key)
+            DO UPDATE SET
+                value = EXCLUDED.value,
+                created_at = now()
+        `, [key, response]);
 
-        const filePath = getCacheFilePath(key);
-        await fs.writeFile(filePath, JSON.stringify(response, null, 2));
-        console.log(`💾 Cached response for key: ${key.substring(0, 8)}...`);
+        console.log(`💾 Cached: ${key.substring(0, 8)}...`);
+
     } catch (error) {
-        console.error(`❌ Failed to cache response: ${error}`);
-        // Don't throw - caching failure shouldn't break the request
+        console.error("❌ Cache write error:", error);
+        // do not break app
     }
 }
 
 /**
- * Clear cache for a specific key
+ * =========================
+ * Clear cache (single key)
+ * =========================
  */
 export async function clearCache(key: string): Promise<void> {
     try {
-        const filePath = getCacheFilePath(key);
-        await fs.unlink(filePath);
-        console.log(`🗑️ Cleared cache for key: ${key.substring(0, 8)}...`);
-    } catch {
-        // File might not exist
+        await pool.query(
+            `DELETE FROM cache WHERE key = $1`,
+            [key]
+        );
+
+        console.log(`🗑️ Cleared cache: ${key.substring(0, 8)}...`);
+
+    } catch (error) {
+        console.error("❌ Cache delete error:", error);
     }
 }
 
 /**
- * Clear all cached responses
+ * =========================
+ * Clear all cache
+ * =========================
  */
 export async function clearAllCache(): Promise<void> {
     try {
-        const cacheDir = getCachePath();
-        const files = await fs.readdir(cacheDir);
-        for (const file of files) {
-            await fs.unlink(path.join(cacheDir, file));
-        }
-        console.log(`🗑️ Cleared all cached responses`);
-    } catch {
-        // Directory might not exist
+        await pool.query(`DELETE FROM cache`);
+        console.log(`🗑️ Cleared all cache`);
+
+    } catch (error) {
+        console.error("❌ Clear all cache error:", error);
     }
 }
