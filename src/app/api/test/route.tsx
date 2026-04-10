@@ -110,6 +110,7 @@ export async function POST(request: Request) {
         const top3Deals = validDeals
             .slice(0, 3); // On prend les 3 premiers après le tri par prix
 
+        console.log("top 3 deals :", top3Deals)
         if (top3Deals.length > 0) {
             // 2. On vérifie si au moins le MEILLEUR deal respecte tes conditions de sécurité
             const best = top3Deals[0];

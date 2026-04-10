@@ -6,7 +6,7 @@ import { pool } from "../../deal-finder/db";
  * Generate cache key
  * =========================
  */
-export function generateCacheKey(properties: {
+export function generateCacheKey(properties: { // google id
     hotelName: string;
     address: string;
     checkIn: string;
