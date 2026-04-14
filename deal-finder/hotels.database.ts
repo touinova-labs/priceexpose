@@ -247,6 +247,8 @@ export async function loadUnresolvedRequests(): Promise<UnresolvedHotelRequest[]
     return result.rows.map(r => ({
         hotelName: r.hotel_name,
         address: r.address,
+        city: r.city,
+        country: r.country,
         destination: r.destination,
         sourcePlatform: r.source_platform,
         sourcePlatformId: r.source_platform_id,
