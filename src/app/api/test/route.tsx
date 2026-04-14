@@ -29,7 +29,19 @@ export async function POST(request: Request) {
 
         var sourceRequest: RawBookRequest = await request.json();
         sourceRequest.origin.hotel_id = sourceRequest.origin.hotel_id.replace(".fr.", "."); // Normalisation temporaire des IDs Booking.fr -> Booking.com
-
+        var hotelOrError = await getGoogleId(sourceRequest.origin.name, sourceRequest.origin.hotel_id);
+        if (hotelOrError === null) {
+            await saveUnresolvedRequest(
+                sourceRequest.hotelName,
+                sourceRequest.address,
+                sourceRequest.destination,
+                sourceRequest.origin.name,
+                sourceRequest.origin.hotel_id,
+                sourceRequest.context?.city,
+                sourceRequest.context?.country,
+            );
+            return NextResponse.json({ hasDeal: false, code: "HOTEL_NOT_FOUND_IN_DATABASE", message: "Hôtel non trouvé" }, { status: 404 });
+        }
         // 🔑 Generate cache key from request properties
         const cacheKey = generateCacheKey({
             hotelName: sourceRequest.hotelName,
@@ -53,20 +65,6 @@ export async function POST(request: Request) {
         const normalized = normalizedOrError as NormalizedBookRequest;
         console.log("Normalized Request:", normalized);
 
-
-        var hotelOrError = await getGoogleId(normalized.origin.name, normalized.origin.hotel_id);
-        if (hotelOrError === null) {
-            await saveUnresolvedRequest(
-                sourceRequest.hotelName,
-                sourceRequest.address,
-                sourceRequest.destination,
-                sourceRequest.origin.name,
-                sourceRequest.origin.hotel_id,
-                sourceRequest.context?.city,
-                sourceRequest.context?.country,
-            );
-            return NextResponse.json({ hasDeal: false, code: "HOTEL_NOT_FOUND_IN_DATABASE", message: "Hôtel non trouvé" }, { status: 404 });
-        }
         const hotel = hotelOrError as GoogleHotelMatch;
         console.log("Resolved Hotel:", hotel);
 
