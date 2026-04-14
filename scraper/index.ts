@@ -34,6 +34,12 @@ export class HotelScraperClient {
     this.timeout = config.timeout || 60000;
   }
 
+  async getBookingFullAddress(url: string): Promise<{ address: string, title: string }> {
+    return this.makeRequest<{ address: string, title: string }>('/booking', {
+      url: url,
+    }).then(result => result);
+  }
+
   /**
    * Discover hotels from a Google Hotels search URL
    * @param searchUrl - Google Hotels search URL

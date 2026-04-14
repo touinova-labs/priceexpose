@@ -49,6 +49,26 @@ export async function loadHotelsDatabase(): Promise<HotelDBEntry[]> {
     }));
 }
 
+export async function loadHotelById(id: number): Promise<HotelDBEntry | null> {
+    const result = await pool.query(
+        "SELECT * FROM hotels WHERE id = $1 LIMIT 1",
+        [id]
+    );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    const row = result.rows[0];
+
+    return {
+        ...row,
+        location: row.location,
+        platformIds: row.platform_ids,
+        resolvedAt: row.resolved_at,
+        resolvedBy: row.resolved_by,
+    };
+}
 /**
  * =========================
  * PLATFORM MATCH
@@ -240,7 +260,9 @@ export async function saveUnresolvedRequest(
     address: string,
     destination: string,
     sourcePlatform: string,
-    sourcePlatformId: string
+    sourcePlatformId: string,
+    city?: string,
+    country?: string
 ): Promise<void> {
 
     await pool.query(`
@@ -251,9 +273,11 @@ export async function saveUnresolvedRequest(
             source_platform,
             source_platform_id,
             timestamp,
-            attempted
+            attempted,
+            city,
+            country
         )
-        VALUES ($1, $2, $3, $4, $5, $6, 1)
+        VALUES ($1, $2, $3, $4, $5, $6, 1, $7, $8)
 
         ON CONFLICT (source_platform, source_platform_id)
         DO UPDATE SET
@@ -270,7 +294,9 @@ export async function saveUnresolvedRequest(
         destination,
         sourcePlatform,
         sourcePlatformId,
-        new Date()
+        new Date(),
+        city,
+        country
     ]);
 }
 

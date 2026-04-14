@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
-import { GoogleHotelMatch, isError, normalizeBookRequest, NormalizedBookRequest, RawBookRequest, resolveHotel } from '../../../../deal-finder';
+import { GoogleHotelMatch, isError, normalizeBookRequest, NormalizedBookRequest, RawBookRequest } from '../../../../deal-finder';
 import { HotelScraperClient } from '../../../../scraper';
 import { normalize_BookingOffers } from '../../../../deal-finder/normalizeBookingOffers';
 import { exploreUnResolved } from '../../../../data/pipeline';
 import { generateCacheKey, getCachedResponse, saveCachedResponse } from '../../../lib/cache';
+import { getGoogleId } from '../../../../deal-finder/hotels-database-resolver';
+import { saveUnresolvedRequest } from '../../../../deal-finder/hotels.database';
 
 // Initialize HotelScraperClient
 const scraperClient = new HotelScraperClient({
@@ -52,9 +54,18 @@ export async function POST(request: Request) {
         console.log("Normalized Request:", normalized);
 
 
-        var hotelOrError = await resolveHotel(normalized);
-        if (isError(hotelOrError)) {
-            return NextResponse.json({ hasDeal: false, ...hotelOrError }, { status: 404 });
+        var hotelOrError = await getGoogleId(normalized.origin.name, normalized.origin.hotel_id);
+        if (hotelOrError === null) {
+            await saveUnresolvedRequest(
+                sourceRequest.hotelName,
+                sourceRequest.address,
+                sourceRequest.destination,
+                sourceRequest.origin.name,
+                sourceRequest.origin.hotel_id,
+                sourceRequest.context?.city,
+                sourceRequest.context?.country,
+            );
+            return NextResponse.json({ hasDeal: false, code: "HOTEL_NOT_FOUND_IN_DATABASE", message: "Hôtel non trouvé" }, { status: 404 });
         }
         const hotel = hotelOrError as GoogleHotelMatch;
         console.log("Resolved Hotel:", hotel);
@@ -158,7 +169,7 @@ export async function POST(request: Request) {
         }
 
         const noDealResponse = { hasDeal: false };
-        
+
         // 💾 Cache the "no deal" response
         await saveCachedResponse(cacheKey, noDealResponse);
 
@@ -169,7 +180,7 @@ export async function POST(request: Request) {
         console.error("Erreur SerpApi:", error);
         return NextResponse.json({
             success: false,
-            error: "Impossible de récupérer les prix Google Hotels"
+            error: "Impossible de récupérer les prix Hotels"
         }, { status: 500 });
     }
 }

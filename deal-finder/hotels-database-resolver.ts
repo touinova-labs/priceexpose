@@ -1,6 +1,6 @@
-import { NormalizedBookRequest, GoogleHotelMatch, DealFinderError, UnresolvedHotelRequest, } from "./types";
+import { NormalizedBookRequest, GoogleId, DealFinderError, UnresolvedHotelRequest, } from "./types";
 
-import { findHotelByPlatformId, findHotelByName, saveUnresolvedRequest, updateHotelInDatabase, } from "./hotels.database";
+import { findHotelByPlatformId, findHotelByName, saveUnresolvedRequest, updateHotelInDatabase, HotelDBEntry, } from "./hotels.database";
 const GROQ_API_KEY = process.env.GROQ_API_KEY; // Ta clé Groq
 
 export type { HotelDBEntry } from "./hotels.database";
@@ -20,12 +20,12 @@ interface ResolveRequest {
 	};
 	hotelName: any;
 }
-export async function resolveHotel(request: ResolveRequest): Promise<GoogleHotelMatch | DealFinderError> {
+export async function resolveHotel(request: ResolveRequest): Promise<GoogleId | DealFinderError> {
 	try {
 		logSearchStart(request);
 
 		// 1️⃣ Platform match (fast & reliable)
-		const platformResult = await tryPlatformMatch(request);
+		const platformResult = await getGoogleId(request.origin.name, request.origin.hotel_id);
 		if (platformResult) return platformResult;
 
 		// 2️⃣ Fuzzy name match
@@ -49,8 +49,8 @@ export async function resolveHotel(request: ResolveRequest): Promise<GoogleHotel
  * STEP 1: PLATFORM MATCH
  * =========================
  */
-async function tryPlatformMatch(request: ResolveRequest): Promise<GoogleHotelMatch | DealFinderError | null> {
-	const match = await findHotelByPlatformId(request.origin.name, request.origin.hotel_id);
+export async function getGoogleId(platform: string, platformId: string): Promise<GoogleId | null> {
+	const match = await findHotelByPlatformId(platform, platformId);
 
 	if (!match.found || !match.hotel) return null;
 
@@ -82,6 +82,35 @@ async function tryNameMatch(request: ResolveRequest) {
 
 	const topCandidates = candidates.slice(0, 20);
 
+	const matchedHotel = await getMatchUsingAI(topCandidates, {
+		name: request.hotelName,
+		city: request.destination,
+		address: request.address,
+		country: "N/A"
+	})
+	if (matchedHotel === null) return null;
+	const googleId = matchedHotel.platformIds["google"];
+
+	if (!googleId) {
+		console.log("Could not find Google id", matchedHotel)
+		return null;
+	}
+
+	console.log(`🤖 AI Match: ${matchedHotel.name}`);
+
+	await updateHotelInDatabase(matchedHotel, request.origin.name.toLowerCase(), request.origin.hotel_id);
+	return buildSuccess(googleId);
+}
+
+export async function getMatchUsingAI(candidates: HotelDBEntry[], hotel: { name: string, address: string, city: string, country: string }) {
+	console.log("🔍 Recherche fuzzy...");
+
+	if (!candidates.length) {
+		return null;
+	}
+
+	const topCandidates = candidates.slice(0, 20);
+
 	const prompt = `
 You are an expert in hotel matching.
 
@@ -89,9 +118,10 @@ Task:
 Determine which hotel from the candidate list is the SAME physical hotel as the input.
 
 Input hotel:
-Name: "${request.hotelName}"
-Address: "${request.address || "N/A"}"
-City: "${request.destination}"
+Name: "${hotel.name}"
+Address: "${hotel.address || "N/A"}"
+City: "${hotel.city}"
+Country: "${hotel.country}"
 
 Candidates:
 ${topCandidates.map((h, i) => `
@@ -107,6 +137,26 @@ Rules:
 - Match based on name similarity + address + city
 - Ignore accents, word order, and common words like "hotel", "paris", "city"
 - Be strict: only match if it is clearly the same hotel
+
+Important:
+Use geographic subdivisions strongly when matching hotels.
+
+Treat equivalent administrative/location indicators as evidence when they correspond, including:
+- arrondissement ↔ postal code
+- district ↔ ZIP/postcode
+- borough ↔ postcode
+- ward ↔ neighborhood code
+- municipality ↔ district
+- airport zone ↔ terminal area
+- neighborhood ↔ local postal sector
+
+Examples:
+- Paris 15th arrondissement ↔ 75015
+- London SW1 ↔ Westminster
+- Tokyo Shinjuku-ku ↔ Shinjuku postal area
+- Barcelona Eixample ↔ matching district postcode
+
+If hotel names are common or duplicated, prioritize exact local-area consistency.
 
 Return JSON only:
 {
@@ -154,17 +204,7 @@ Return JSON only:
 	}
 
 	const matchedHotel = topCandidates[result.match_index - 1];
-	const googleId = matchedHotel.platformIds["google"];
-
-	if (!googleId) {
-		console.log("Could not find Google id", matchedHotel)
-		return null;
-	}
-
-	console.log(`🤖 AI Match: ${matchedHotel.name} (confidence: ${result.confidence})`);
-
-	await updateHotelInDatabase(matchedHotel, request.origin.name.toLowerCase(), request.origin.hotel_id);
-	return buildSuccess(googleId);
+	return matchedHotel;
 }
 
 /**
@@ -196,7 +236,7 @@ async function handleNotFound(request: ResolveRequest): Promise<DealFinderError>
  * =========================
  */
 
-function buildSuccess(googleId: string): GoogleHotelMatch {
+function buildSuccess(googleId: string): GoogleId {
 	return {
 		propertyToken: googleId
 	};
@@ -218,33 +258,60 @@ export async function cleanHotelName(request: UnresolvedHotelRequest) {
 
 
 	const prompt = `
-You are a data normalization expert. Your goal is to extract the canonical brand name of a hotel for high-accuracy cross-platform matching.
 
-Rules for clean_name:
+You are a data normalization and entity resolution expert specializing in hotel names. Your task is to extract the canonical hotel name and generate a high-precision search query for cross-platform matching (e.g., Booking.com → Google Hotels → Maps).
 
-Strip Descriptive Fluff: Remove "Adults Only", "City Centre", "All Inclusive", "Half Board", and specific district names.
+INPUT:
+You will receive:
+- name (raw hotel listing name, may contain promotional text)
+- address (location information)
+- url (source slug, may contain brand hints)
+- search context (target city/region)
 
-Prioritize Brand: Use the brand name found in url.
+OBJECTIVE:
+Return a normalized hotel entity with:
+1. clean_name → canonical hotel name only
+2. search_query → optimized query for finding the same hotel on Google Hotels / Maps
+3. confidence → probability score (0 to 1) indicating correctness
 
-Format: Use proper casing and remove redundant descriptors that aren't part of the legal hotel name.
+RULES FOR clean_name:
+- Remove all promotional text (e.g., “Awarded Best Hotel 2025”, “Budget Category”, “Top Rated”)
+- Remove marketing adjectives and rankings
+- Remove neighborhood/city descriptors unless part of official brand name
+- Ignore booking platform artifacts unless they clearly indicate brand (e.g., OYO, FabHotel, Marriott)
+- Keep only the official or most commonly recognized hotel name
+- Normalize capitalization (Title Case)
+- Remove extra punctuation and redundant whitespace
 
-Rules for search_query:
-Your goal is to transform a the hotel from Booking.com (the input) into a clean, canonical form that can be reliably used to search and match the same property on Google Hotels.
+RULES FOR search_query:
+- Start with clean_name
+- Add minimal disambiguation if needed:
+  - Neighborhood (only if required for uniqueness)
+  - City (always include)
+  - Country (inculde)
+- Use address/url clues if helpful for disambiguation
+- Avoid promotional words and reviews
+- Keep query short, search-engine optimized, and high-recall
 
+CONFIDENCE SCORING:
+- 0.90–1.00: Strong canonical match (well-known or highly certain)
+- 0.70–0.89: Likely correct with minor uncertainty
+- 0.40–0.69: Moderate inference required
+- <0.40: Weak or ambiguous match
+
+OUTPUT FORMAT:
+Return ONLY valid JSON:
+{
+  "clean_name": string,
+  "search_query": string,
+  "confidence": number
+}
 
 Input:
 name : ${request.hotelName}
 adress : ${request.address}
 url : ${request.sourcePlatformId}
 related to search in : ${request.destination} 
-
-
-Return ONLY valid JSON with:
-{
-  "clean_name": string,
-  "search_query": string,
-  "confidence": number // between 0 and 1
-}
 `;
 
 
@@ -290,6 +357,6 @@ Return ONLY valid JSON with:
 		console.log(`⚠️ Low confidence: ${result.confidence}`);
 		return null;
 	}
-	return result.search_query
+	return { search_query: result.search_query, clean_name: result.clean_name }
 
 }

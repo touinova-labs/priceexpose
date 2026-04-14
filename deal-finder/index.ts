@@ -1,7 +1,7 @@
 export type {
     RawBookRequest,
     NormalizedBookRequest,
-    GoogleHotelMatch,
+    GoogleId as GoogleHotelMatch,
     DealFinderResult,
     DealFinderError,
     UnresolvedHotelRequest,

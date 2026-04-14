@@ -1,35 +1,58 @@
 import { v4 as uuidv4 } from "uuid";
-import { findHotelByPlatformId, HotelDBEntry, loadHotelsDatabase, loadUnresolvedRequests, removeFromUnresolved, upsertHotelInDB } from "../deal-finder/hotels.database";
+import { findHotelByPlatformId, HotelDBEntry, loadHotelById, loadHotelsDatabase, loadUnresolvedRequests, removeFromUnresolved, updateHotelInDatabase, upsertHotelInDB } from "../deal-finder/hotels.database";
 import { HotelScraperClient } from "../scraper";
-import { resolveHotel } from "../deal-finder";
-import { cleanHotelName } from "../deal-finder/hotels-database-resolver";
+import { resolveHotel, UnresolvedHotelRequest } from "../deal-finder";
+import { cleanHotelName, getGoogleId, getMatchUsingAI } from "../deal-finder/hotels-database-resolver";
 
 const scraperClient = new HotelScraperClient({
     baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || 'http://82.165.116.199:3000/api/hotels',
     timeout: 60000
 });
 
+async function getBookingFullAddress(req: UnresolvedHotelRequest) {
+    let local = ""
+    if (req.country === "France") local = "fr"
+    if (local === "")
+        throw Error("no local for taht country : " + req.country)
+    const url = `https://www.booking.com/hotel/${local}/${req.sourcePlatformId}`
+    return await scraperClient.getBookingFullAddress(url);
+}
 
 export async function exploreUnResolved() {
-    const unresolved = (await loadUnresolvedRequests())//.filter(t => t.hotelName === 'Hotel Safia');
+    const unresolved = (await loadUnresolvedRequests())//.filter(t => t.hotelName === 'Hôtel De La Paix');
     for (const request of unresolved) {
         console.log(`Exploring unresolved request for ${request.hotelName} (${request.sourcePlatform})`);
+        const { address: fullAdress } = await getBookingFullAddress(request)
+        if (!fullAdress) {
+            console.log("cound not get the full address")
+            continue;
+        }
+
+        const platformResult = await getGoogleId(request.sourcePlatform, request.sourcePlatformId);
+        if (platformResult) {
+            await removeFromUnresolved(request.sourcePlatform, request.sourcePlatformId);
+            continue;
+        }
+
         try {
             const cleanQuery = await cleanHotelName(request)
             console.log("clean name for search hotel : ", cleanQuery)
             if (!cleanQuery) continue;
-            const searchUrl = `https://www.google.com/travel/search?q=${encodeURIComponent(cleanQuery)}`;
+            const searchUrl = `https://www.google.com/travel/search?q=${encodeURIComponent(cleanQuery.search_query)}`;
             const data = await scraperClient.discoverHotels(searchUrl);
-            
+
             let resolved = false
             if (data instanceof Array) {
                 const used = data.slice(0, 3)
+                const candidates: HotelDBEntry[] = []
                 for (const item of used) {
-                    const { found } = await findHotelByPlatformId("google", item.googleId)
+                    const { found, hotel } = await findHotelByPlatformId("google", item.googleId)
                     console.log("found", found)
+                    let hotel_id = hotel?.id
                     if (!found) {
+                        hotel_id = uuidv4()
                         const hotel: HotelDBEntry = {
-                            id: uuidv4(),
+                            id: hotel_id,
                             name: item.name,
                             platformIds: {
                                 google: item.googleId,
@@ -41,18 +64,20 @@ export async function exploreUnResolved() {
                         await enrichHotel(hotel.id, item.googleId);
                     }
 
-                    const result: any = await resolveHotel({
-                        hotelName: request.hotelName,
-                        address: request.address,
-                        destination: request.destination,
-                        origin: {
-                            name: request.sourcePlatform.toLowerCase(),
-                            hotel_id: request.sourcePlatformId
-                        }
-                    });
-                    if (result.propertyToken) { resolved = true; break; }
+                    const candidate = await loadHotelById(hotel_id!);
+                    if (candidate) candidates.push(candidate)
                 }
-                console.log(`Unexpected array result for ${request.hotelName}:`, used);
+
+                const matchCandidate = await getMatchUsingAI(candidates, {
+                    name: cleanQuery.clean_name,
+                    address: fullAdress,
+                    city: request.city,
+                    country: request.country,
+                });
+                if (matchCandidate !== null) {
+                    await updateHotelInDatabase(matchCandidate, request.sourcePlatform.toLowerCase(), request.sourcePlatformId);
+                    resolved = true
+                }
             } else if ('popup' in data && data.popup) {
                 console.log(`Popup result for ${request.hotelName}:`, data);
                 const hotel: HotelDBEntry = {

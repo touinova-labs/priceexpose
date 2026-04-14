@@ -39,6 +39,23 @@ export interface RawBookRequest {
 
     gl: string; // Google locale (e.g., "us", "fr")
     hl: string// Google language (e.g., "en", "fr")
+
+    context: {
+        city?: string;
+        country?: string;
+        currency?: string;
+        language?: string;
+    };
+    stay: {
+        checkIn?: string;
+        checkOut?: string;
+        nights?: number;
+    };
+    guests: {
+        adults?: number;
+        children?: number;
+        ages?: number[];
+    };
 }
 
 /**
@@ -68,7 +85,7 @@ export interface NormalizedBookingOffer extends RawBookingOffer {
 /**
  * Résultat de la recherche de l'hôtel sur Google
  */
-export interface GoogleHotelMatch {
+export interface GoogleId {
     propertyToken: string;
 }
 
@@ -104,4 +121,6 @@ export interface UnresolvedHotelRequest {
     sourcePlatformId: string;
     timestamp: string;
     attempted: number;
+    city: string,
+    country: string
 }
