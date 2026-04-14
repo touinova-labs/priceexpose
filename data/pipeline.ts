@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { HotelDBEntry, loadHotelsDatabase, loadUnresolvedRequests, removeFromUnresolved, upsertHotelInDB } from "../deal-finder/hotels.database";
+import { findHotelByPlatformId, HotelDBEntry, loadHotelsDatabase, loadUnresolvedRequests, removeFromUnresolved, upsertHotelInDB } from "../deal-finder/hotels.database";
 import { HotelScraperClient } from "../scraper";
 import { resolveHotel } from "../deal-finder";
+import { cleanHotelName } from "../deal-finder/hotels-database-resolver";
 
 const scraperClient = new HotelScraperClient({
     baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || 'http://82.165.116.199:3000/api/hotels',
@@ -10,42 +11,53 @@ const scraperClient = new HotelScraperClient({
 
 
 export async function exploreUnResolved() {
-    const unresolved = await loadUnresolvedRequests();
+    const unresolved = (await loadUnresolvedRequests())//.filter(t => t.hotelName === 'Hotel Safia');
     for (const request of unresolved) {
         console.log(`Exploring unresolved request for ${request.hotelName} (${request.sourcePlatform})`);
         try {
-            const searchUrl = `https://www.google.com/travel/search?q=${encodeURIComponent(request.hotelName + " " + request.destination)}`;
+            const cleanQuery = await cleanHotelName(request)
+            console.log("clean name for search hotel : ", cleanQuery)
+            if (!cleanQuery) continue;
+            const searchUrl = `https://www.google.com/travel/search?q=${encodeURIComponent(cleanQuery)}`;
             const data = await scraperClient.discoverHotels(searchUrl);
+            
+            let resolved = false
             if (data instanceof Array) {
-                for (const item of data) {
-                    const hotel: HotelDBEntry = {
-                        id: uuidv4(),
-                        name: item.name,
-                        platformIds: {
-                            google: item.googleId,
-                        },
-                        resolvedAt: new Date().toISOString(),
-                        resolvedBy: "NOT_RESOLVED_YET"
-                    };
-                    await upsertHotelInDB(hotel);
-                    await enrichHotel(hotel.id, item.googleId);
-                    await resolveHotel({
+                const used = data.slice(0, 3)
+                for (const item of used) {
+                    const { found } = await findHotelByPlatformId("google", item.googleId)
+                    console.log("found", found)
+                    if (!found) {
+                        const hotel: HotelDBEntry = {
+                            id: uuidv4(),
+                            name: item.name,
+                            platformIds: {
+                                google: item.googleId,
+                            },
+                            resolvedAt: new Date().toISOString(),
+                            resolvedBy: "NOT_RESOLVED_YET"
+                        };
+                        await upsertHotelInDB(hotel);
+                        await enrichHotel(hotel.id, item.googleId);
+                    }
+
+                    const result: any = await resolveHotel({
                         hotelName: request.hotelName,
                         address: request.address,
                         destination: request.destination,
                         origin: {
-                            name: request.sourcePlatform,
+                            name: request.sourcePlatform.toLowerCase(),
                             hotel_id: request.sourcePlatformId
                         }
                     });
+                    if (result.propertyToken) { resolved = true; break; }
                 }
-                console.log(`Unexpected array result for ${request.hotelName}:`, data);
-                continue;
+                console.log(`Unexpected array result for ${request.hotelName}:`, used);
             } else if ('popup' in data && data.popup) {
                 console.log(`Popup result for ${request.hotelName}:`, data);
                 const hotel: HotelDBEntry = {
                     id: uuidv4(),
-                    name: request.hotelName,
+                    name: data.hotel_name ?? request.hotelName,
                     platformIds: {
                         google: data.googleId,
                         [request.sourcePlatform.toLowerCase()]: request.sourcePlatformId
@@ -61,8 +73,10 @@ export async function exploreUnResolved() {
                     resolvedBy: "AUTO_RESOLVE"
                 };
                 await upsertHotelInDB(hotel);
+                resolved = true
             }
-            await removeFromUnresolved(request.sourcePlatform, request.sourcePlatformId);
+            if (resolved)
+                await removeFromUnresolved(request.sourcePlatform, request.sourcePlatformId);
         } catch (e) {
             console.error(`Error exploring unresolved request for ${request.hotelName}:`, e);
         }

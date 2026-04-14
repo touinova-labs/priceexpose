@@ -61,7 +61,7 @@ export async function findHotelByPlatformId(platform: string, platformId: string
         WHERE platform_ids->>$1 = $2
     `;
 
-    const result = await pool.query(query, [platform, platformId]);
+    const result = await pool.query(query, [platform.toLowerCase(), platformId]);
 
     if (result.rows.length === 0) return { found: false };
 
@@ -161,7 +161,7 @@ export async function updateHotelInDatabase(hotelEntry: HotelDBEntry, platform: 
     `;
 
     await pool.query(query, [
-        `{${platform}}`,
+        `{${platform.toLowerCase()}}`,
         JSON.stringify(platformId),
         new Date(),
         hotelEntry.id
@@ -191,7 +191,7 @@ export async function upsertHotelInDB(updates: Partial<HotelDBEntry>): Promise<{
                 name = COALESCE(EXCLUDED.name, hotels.name),
                 location = COALESCE(EXCLUDED.location, hotels.location),
                 telephone_number = COALESCE(EXCLUDED.telephone_number, hotels.telephone_number),
-                platform_ids = hotels.platform_ids || EXCLUDED.platform_ids,
+                platform_ids =  COALESCE(EXCLUDED.platform_ids, hotels.platform_ids),
                 resolved_at = EXCLUDED.resolved_at,
                 resolved_by = EXCLUDED.resolved_by
         `, [
@@ -221,7 +221,7 @@ export async function upsertHotelInDB(updates: Partial<HotelDBEntry>): Promise<{
 export async function loadUnresolvedRequests(): Promise<UnresolvedHotelRequest[]> {
     const result = await pool.query(`
         SELECT * FROM unresolved_hotels
-        ORDER BY timestamp DESC
+        
     `);
 
     return result.rows.map(r => ({
@@ -278,7 +278,7 @@ export async function removeFromUnresolved(
     sourcePlatform: string,
     sourcePlatformId: string
 ): Promise<{ success: boolean }> {
-
+    console.log("Remove ", sourcePlatform, sourcePlatformId, "from unresolved")
     const result = await pool.query(`
         DELETE FROM unresolved_hotels
         WHERE source_platform = $1

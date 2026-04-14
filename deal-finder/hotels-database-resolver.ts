@@ -1,4 +1,4 @@
-import { NormalizedBookRequest, GoogleHotelMatch, DealFinderError, } from "./types";
+import { NormalizedBookRequest, GoogleHotelMatch, DealFinderError, UnresolvedHotelRequest, } from "./types";
 
 import { findHotelByPlatformId, findHotelByName, saveUnresolvedRequest, updateHotelInDatabase, } from "./hotels.database";
 const GROQ_API_KEY = process.env.GROQ_API_KEY; // Ta clé Groq
@@ -80,7 +80,7 @@ async function tryNameMatch(request: ResolveRequest) {
 		return null;
 	}
 
-	const topCandidates = candidates.slice(0, 5);
+	const topCandidates = candidates.slice(0, 20);
 
 	const prompt = `
 You are an expert in hotel matching.
@@ -99,6 +99,8 @@ Index : ${i + 1}.
 Name: "${h.name}"
 Address: "${h.location?.address || "N/A"}"
 City: "${h.location?.city || "N/A"}"
+Country: "${h.location?.country || "N/A"}"
+Postal code: "${h.location?.postal_code || "N/A"}"
 `).join("\n")}
 
 Rules:
@@ -155,12 +157,13 @@ Return JSON only:
 	const googleId = matchedHotel.platformIds["google"];
 
 	if (!googleId) {
+		console.log("Could not find Google id", matchedHotel)
 		return null;
 	}
 
 	console.log(`🤖 AI Match: ${matchedHotel.name} (confidence: ${result.confidence})`);
 
-	await updateHotelInDatabase(matchedHotel, request.origin.name, request.origin.hotel_id);
+	await updateHotelInDatabase(matchedHotel, request.origin.name.toLowerCase(), request.origin.hotel_id);
 	return buildSuccess(googleId);
 }
 
@@ -209,4 +212,84 @@ function buildError(
 
 function logSearchStart(request: ResolveRequest) {
 	console.log(`🔍 Recherche: "${request.hotelName}" (${request.origin.name}/${request.origin.hotel_id})`);
+}
+
+export async function cleanHotelName(request: UnresolvedHotelRequest) {
+
+
+	const prompt = `
+You are a data normalization expert. Your goal is to extract the canonical brand name of a hotel for high-accuracy cross-platform matching.
+
+Rules for clean_name:
+
+Strip Descriptive Fluff: Remove "Adults Only", "City Centre", "All Inclusive", "Half Board", and specific district names.
+
+Prioritize Brand: Use the brand name found in url.
+
+Format: Use proper casing and remove redundant descriptors that aren't part of the legal hotel name.
+
+Rules for search_query:
+Your goal is to transform a the hotel from Booking.com (the input) into a clean, canonical form that can be reliably used to search and match the same property on Google Hotels.
+
+
+Input:
+name : ${request.hotelName}
+adress : ${request.address}
+url : ${request.sourcePlatformId}
+related to search in : ${request.destination} 
+
+
+Return ONLY valid JSON with:
+{
+  "clean_name": string,
+  "search_query": string,
+  "confidence": number // between 0 and 1
+}
+`;
+
+
+	const response = await fetch(
+		"https://api.groq.com/openai/v1/chat/completions",
+		{
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${GROQ_API_KEY}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				model: "llama-3.3-70b-versatile",
+				temperature: 0,
+				response_format: { type: "json_object" },
+				messages: [
+					{
+						role: "system",
+						content:
+							"You are a strict JSON generator. Always return valid JSON only. No explanations.",
+					},
+					{
+						role: "user",
+						content: prompt,
+					},
+				],
+			}),
+		}
+	);
+
+	const data = await response.json();
+
+	let result;
+	try {
+		result = JSON.parse(data.choices[0].message.content);
+		console.log(`🤖 AI result: search_query=${result.search_query}, confidence=${result.confidence}`);
+	} catch {
+		console.error("❌ JSON parse error:", data);
+		return null;
+	}
+
+	if (result.confidence < 0.7) {
+		console.log(`⚠️ Low confidence: ${result.confidence}`);
+		return null;
+	}
+	return result.search_query
+
 }
