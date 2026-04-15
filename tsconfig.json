@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/deal-finder/*": ["./deal-finder/*"]
     }
   },
   "include": [

@@ -37,9 +37,14 @@ export function Navbar() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+            <a
+              href="https://chromewebstore.google.com/detail/priceexpose-%E2%80%93-stop-overpa/mnokglibfjmpbedpkhiplggpfpgifmed?authuser=0&hl=en"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+            >
               Download
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -83,9 +88,14 @@ export function Navbar() {
             >
               Contact
             </Link>
-            <button className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors mt-2">
+            <a
+              href="https://chromewebstore.google.com/detail/priceexpose-%E2%80%93-stop-overpa/mnokglibfjmpbedpkhiplggpfpgifmed?authuser=0&hl=en"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block w-full text-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors mt-2"
+            >
               Download
-            </button>
+            </a>
           </div>
         )}
       </div>

@@ -35,9 +35,19 @@ export class HotelScraperClient {
   }
 
   async getBookingFullAddress(url: string): Promise<{ address: string, title: string }> {
-    return this.makeRequest<{ address: string, title: string }>('/booking', {
-      url: url,
-    }).then(result => result);
+    const response = await fetch(`${this.baseUrl}${'/booking'}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: url,
+      }),
+    });
+
+    const data = await response.json();
+
+    return data;
   }
 
   /**

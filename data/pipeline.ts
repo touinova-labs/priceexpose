@@ -19,7 +19,7 @@ async function getBookingFullAddress(req: UnresolvedHotelRequest) {
 }
 
 export async function exploreUnResolved() {
-    const unresolved = (await loadUnresolvedRequests())//.filter(t => t.hotelName === 'Hôtel De La Paix');
+    const unresolved = (await loadUnresolvedRequests());
     for (const request of unresolved) {
         console.log(`Exploring unresolved request for ${request.hotelName} (${request.sourcePlatform})`);
         const { address: fullAdress } = await getBookingFullAddress(request)

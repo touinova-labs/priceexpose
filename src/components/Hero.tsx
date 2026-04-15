@@ -15,7 +15,9 @@ export function Hero() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <a
-              href="#"
+              href="https://chromewebstore.google.com/detail/priceexpose-%E2%80%93-stop-overpa/mnokglibfjmpbedpkhiplggpfpgifmed?authuser=0&hl=en"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors text-lg"
             >
               <Smartphone className="w-5 h-5" />
