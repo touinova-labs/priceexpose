@@ -166,7 +166,7 @@ export async function POST(request: Request) {
                         source: deal.name,
                         totalPrice: deal.totalPrice,
                         savings: Math.round(totalBooking - deal.totalPrice),
-                        url: `http://localhost:3000/redirect?${redirectParams.toString()}`,
+                        url: `https://www.priceexpose.com/redirect?${redirectParams.toString()}`,
                         isOfficial: deal.isOfficial
                     };
                 });
