@@ -1,5 +1,5 @@
+import { getAllProviders } from '@/deal-finder/helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllProviders } from '@/deal-finder/helpers/dealClicks';
 
 export async function GET(request: NextRequest) {
   try {
