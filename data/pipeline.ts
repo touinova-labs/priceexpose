@@ -1,17 +1,19 @@
 import { v4 as uuidv4 } from "uuid";
 import { findHotelByPlatformId, HotelDBEntry, loadHotelById, loadHotelsDatabase, loadUnresolvedRequests, removeFromUnresolved, updateHotelInDatabase, upsertHotelInDB } from "../deal-finder/hotels.database";
 import { HotelScraperClient } from "../scraper";
-import { resolveHotel, UnresolvedHotelRequest } from "../deal-finder";
+import { UnresolvedHotelRequest } from "../deal-finder";
 import { cleanHotelName, getGoogleId, getMatchUsingAI } from "../deal-finder/hotels-database-resolver";
 
 const scraperClient = new HotelScraperClient({
-    baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || 'http://82.165.116.199:3000/api/hotels',
+    baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || "http://localhost:3001/api/hotels",
     timeout: 60000
 });
 
 async function getBookingFullAddress(req: UnresolvedHotelRequest) {
     let local = ""
     if (req.country === "France") local = "fr"
+    if (req.country === "Singapore") local = "sg"
+    if (req.country === "India") local = "in"
     if (local === "")
         throw Error("no local for taht country : " + req.country)
     const url = `https://www.booking.com/hotel/${local}/${req.sourcePlatformId}`

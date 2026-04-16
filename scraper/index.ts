@@ -2,12 +2,6 @@
  * Hotel Scraper API Client
  * High-level TypeScript client for hotel discovery, enrichment, and booking offers
  *
- * Usage:
- * ```typescript
- * const client = new HotelScraperClient({
- *   baseUrl: 'http://82.165.116.199:3000/api/hotels'
- * });
- *
  * const hotels = await client.discoverHotels('https://www.google.com/travel/search?q=hotels+paris');
  * const details = await client.enrichHotel(hotels[0].googleId);
  * const offers = await client.getBookingOffers(hotels[0].googleId, '2026-04-13', '2026-04-16');
@@ -15,7 +9,6 @@
  */
 
 import {
-  Hotel,
   HotelDetails,
   BookingOffer,
   DiscoverResult,

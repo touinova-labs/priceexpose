@@ -23,38 +23,6 @@ interface DealClickResponse {
 }
 
 /**
- * Get all available providers
- */
-export async function getAllProviders(): Promise<
-  Array<{
-    id: number;
-    name: string;
-    enabled: boolean;
-  }>
-> {
-  const client = await pool.connect();
-
-  try {
-    const result = await client.query(`
-      SELECT id, name, enabled
-      FROM providers
-      ORDER BY name ASC
-    `);
-
-    return result.rows.map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      enabled: row.enabled,
-    }));
-  } catch (error) {
-    console.error('Error getting providers:', error);
-    throw new Error('Failed to get providers');
-  } finally {
-    client.release();
-  }
-}
-
-/**
  * Log a user's deal click with travel settings, price, and selected provider
  */
 export async function logDealClick(input: CreateDealClickInput): Promise<DealClickResponse> {

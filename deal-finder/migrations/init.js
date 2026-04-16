@@ -1,18 +1,15 @@
-#!/usr/bin/env node
+const { Pool } = require('pg');
 
-/**
- * PostgreSQL Database Migration Script
- * 
- * This script initializes the PostgreSQL database with necessary
- * tables and indexes for PriceExpose.
- * 
- * Usage: npx ts-node deal-finder/migrations/init.ts
- * Or: node dist/deal-finder/migrations/init.js
- */
+// Database pool
+const pool = new Pool({
+    host: "82.165.116.199",
+    port: 5432,
+    user: "hotels_user",
+    password: "strongpassword",
+    database: "hotels_db",
+});
 
-import { pool } from '../db';
-
-export async function createTables() {
+async function createTables() {
   const client = await pool.connect();
 
   try {
@@ -67,15 +64,7 @@ export async function createTables() {
       );
     `);
 
-    // Create indexes for deal_clicks
-    console.log('Creating indexes for deal_clicks...');
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_deal_clicks_provider_id ON deal_clicks(provider_id);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_deal_clicks_selected_provider_price ON deal_clicks(selected_provider_price);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_deal_clicks_created_at ON deal_clicks(created_at DESC);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_deal_clicks_currency ON deal_clicks(currency);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_deal_clicks_provider_created ON deal_clicks(provider_id, created_at DESC);`);
-    console.log('✅ deal_clicks table created with indexes');
-
+   
     // Create PriceAlert table
     console.log('\nCreating price_alerts table...');
     await client.query(`
@@ -94,20 +83,27 @@ export async function createTables() {
       );
     `);
 
-    // Create indexes for price_alerts
-    console.log('Creating indexes for price_alerts...');
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_price_alerts_email ON price_alerts(email);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_price_alerts_is_active ON price_alerts(is_active);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_price_alerts_last_alert_sent ON price_alerts(last_alert_sent);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_price_alerts_unsubscribe_token ON price_alerts(unsubscribe_token);`);
-    console.log('✅ price_alerts table created with indexes');
 
+    // Create page_visits table
+    console.log('\nCreating page_visits table...');
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS page_visits (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        page_name VARCHAR(255) NOT NULL,
+        ip_address INET NOT NULL,
+        user_agent TEXT NOT NULL,
+        visited_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        UNIQUE(page_name, ip_address, user_agent)
+      );
+    `);
+   
     console.log('\n✅ Database initialization completed successfully!');
     console.log('\n📊 Tables created:');
     console.log('   • providers - Available booking platforms');
     console.log('   • deal_clicks - Tracks user interactions (searches with selected provider, price, and travel settings)');
     console.log('   • price_alerts - Stores email subscriptions for price alerts');
-
+    console.log('   • page_visits - Tracks page views with IP and user agent');
     console.log('\n📝 Sample queries:');
     console.log('   • Get all clicks with provider names:');
     console.log('     SELECT dc.*, p1.name as provider, p2.name as selected_provider FROM deal_clicks dc');

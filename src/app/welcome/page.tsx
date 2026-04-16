@@ -2,7 +2,7 @@
 
 import { Footer } from "@/components/Footer";
 import { CheckCircle, Zap, Lock, AlertCircle, Play, Sparkles, TrendingDown, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function WelcomePage() {
   const [formData, setFormData] = useState({
@@ -14,6 +14,28 @@ export default function WelcomePage() {
   const [submitMessage, setSubmitMessage] = useState('');
   const [submitError, setSubmitError] = useState('');
 
+
+  useEffect(() => {
+    // Track page view when component mounts
+    const trackPageView = async () => {
+      try {
+        await fetch('/api/tracking/page-view', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            pageName: 'welcome',
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to track page view:', error);
+      }
+    };
+
+    trackPageView();
+  }, []);
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({

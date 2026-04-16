@@ -8,8 +8,13 @@
 // Deal Click Helpers
 export {
   logDealClick,
-  getAllProviders,
 } from './dealClicks';
+
+// Provider Helpers
+export {
+  getAllProviders,
+  getOrCreateProvider,
+} from './providers';
 
 // Price Alert Helpers
 export {

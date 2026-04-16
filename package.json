@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:init": "npx ts-node deal-finder/migrations/init.ts",
-    "db:init:build": "npm run build && node dist/deal-finder/migrations/init.js"
+    "db:init": "node deal-finder/migrations/init.js",
+    "db:init:build": "node deal-finder/migrations/init.js"
   },
   "dependencies": {
     "@sparticuz/chromium-min": "^143.0.4",

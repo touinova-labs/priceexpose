@@ -13,9 +13,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">PE</span>
-            </div>
+            <img src="/logo.png" alt="PriceExpose" className="w-8 h-8" />
             <span className="text-2xl font-bold text-black hidden sm:inline">PriceExpose</span>
           </Link>
 

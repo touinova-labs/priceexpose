@@ -6,10 +6,11 @@ import { exploreUnResolved } from '../../../../data/pipeline';
 import { generateCacheKey, getCachedResponse, saveCachedResponse } from '../../../lib/cache';
 import { getGoogleId } from '../../../../deal-finder/hotels-database-resolver';
 import { saveUnresolvedRequest } from '../../../../deal-finder/hotels.database';
+import { getOrCreateProvider } from '@/deal-finder/helpers';
 
 // Initialize HotelScraperClient
 const scraperClient = new HotelScraperClient({
-    baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || 'http://82.165.116.199:3000/api/hotels',
+    baseUrl: process.env.HOTEL_SCRAPER_BASE_URL || "http://localhost:3001/api/hotels",
     timeout: 60000
 });
 
@@ -129,7 +130,7 @@ export async function POST(request: Request) {
             if (savingsPercent >= 2 && savingsPercent <= 40) {
 
                 // 3. On formate les 3 deals proprement
-                const formattedDeals = top3Deals.map(deal => {
+                const formattedDeals = top3Deals.map(async deal => {
                     let finalUrl = deal.link;
                     try {
                         // Extraction de la destination réelle (pcurl)
@@ -140,11 +141,32 @@ export async function POST(request: Request) {
                         // Si l'URL n'est pas standard, on garde l'originale
                     }
 
+                    // Get provider ID
+                    const { id: selectedProviderId } = await getOrCreateProvider(deal.name);
+
+                    // Build travel settings string
+                    const travelSettings = `${normalized.checkIn} to ${normalized.checkOut}, ${normalized.adults} adult${normalized.adults > 1 ? 's' : ''}${normalized.children > 0 ? `, ${normalized.children} child${normalized.children > 1 ? 'ren' : ''}` : ''}`;
+
+                    // Get traffic source provider ID (assume it came from Booking.com as source)
+                    const providerId = 1; // Default to Booking.com as traffic source
+
+                    // Build redirect URL with all deal click parameters
+                    const redirectParams = new URLSearchParams({
+                        providerId: String(providerId),
+                        selectedProviderId: String(selectedProviderId),
+                        selectedProviderPrice: String(deal.totalPrice),
+                        propertyId: sourceRequest.origin.hotel_id || 'unknown',
+                        travelSettings: travelSettings,
+                        bookingPrice: String(totalBooking),
+                        currency: normalized.leadOffer.currency,
+                        url: `${finalUrl}&utm_source=priceexpose&px_track_deal=true`
+                    });
+
                     return {
                         source: deal.name,
                         totalPrice: deal.totalPrice,
                         savings: Math.round(totalBooking - deal.totalPrice),
-                        url: `${finalUrl}&utm_source=priceexpose&px_track=true`,
+                        url: `http://localhost:3000/redirect?${redirectParams.toString()}`,
                         isOfficial: deal.isOfficial
                     };
                 });
@@ -156,7 +178,7 @@ export async function POST(request: Request) {
                     totalBooking: totalBooking,
                     bestSavings: Math.round(savings),
                     bestSavingsPercent: Math.round(savingsPercent),
-                    deals: formattedDeals // On renvoie le tableau complet
+                    deals: await Promise.all(formattedDeals)
                 };
 
                 // 💾 Cache the successful response

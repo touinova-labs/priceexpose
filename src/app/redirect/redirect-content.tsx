@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Shield } from 'lucide-react';
 
@@ -19,7 +19,7 @@ export default function RedirectContent() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [providerName, setProviderName] = useState('Hotel Provider');
+  const hasLogged = useRef(false);
 
   // Extract all deal click parameters from URL
   const dealClickParams: DealClickParams | null = (() => {
@@ -65,6 +65,8 @@ export default function RedirectContent() {
   const dealUrl = dealClickParams?.url;
 
   useEffect(() => {
+    if(hasLogged.current) return;
+    hasLogged.current = true;
     // Validate required parameters
     if (!dealUrl || !dealClickParams) {
       setErrorMessage('Invalid redirect link. Missing required parameters.');
@@ -160,9 +162,7 @@ export default function RedirectContent() {
         {/* Logo & Header */}
         <div className="mb-12">
           <div className="inline-flex items-center justify-center gap-2 mb-6">
-            <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">PE</span>
-            </div>
+            <img src="/logo.png" alt="PriceExpose" className="w-12 h-12 shadow-lg" />
             <span className="text-2xl font-bold text-black">PriceExpose</span>
           </div>
         </div>
