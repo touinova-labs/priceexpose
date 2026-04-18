@@ -28,6 +28,11 @@ export default function WelcomePage() {
             pageName: 'welcome',
           }),
         });
+        if (typeof (window as any).gtag === 'function') {
+          (window as any).gtag('event', 'conversion', {
+            send_to: 'AW-17950352927/T3BQCMu9sZ4cEJ_Msu9C'
+          });
+        }
       } catch (error) {
         console.error('Failed to track page view:', error);
       }
@@ -35,7 +40,7 @@ export default function WelcomePage() {
 
     trackPageView();
   }, []);
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -67,7 +72,7 @@ export default function WelcomePage() {
 
       setSubmitMessage('✅ ' + data.message);
       setFormData({ email: '', favoriteRoute: '', consentGiven: false });
-      
+
       // Clear message after 5 seconds
       setTimeout(() => setSubmitMessage(''), 5000);
     } catch (error) {
